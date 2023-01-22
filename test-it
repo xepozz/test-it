@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+if (isset($GLOBALS['_composer_autoload_path'])) {
+    require_once $GLOBALS['_composer_autoload_path'];
+} else {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\SingleCommandApplication;
+use Xepozz\TestIt\TestGenerator;
+
+(new SingleCommandApplication())
+    ->setName('Test it!')
+    ->setVersion('1.0.0')
+    ->addArgument('source', InputArgument::OPTIONAL, 'The directory that will be processed', 'src')
+    ->addArgument('target', InputArgument::OPTIONAL, 'The output directory where tests will be placed', 'tests')
+    ->setCode(function (InputInterface $input, OutputInterface $output) {
+        $sourceDirectory = $input->getArgument('source');
+        $testDirectory = $input->getArgument('target');
+        $visitor = new TestGenerator($sourceDirectory, $testDirectory);
+
+        $visitor->process();
+        $output->writeln('All done.');
+    })
+    ->run();

@@ -1,0 +1,23 @@
+{
+  "name": "xepozz/test-it",
+  "bin": ["test-it"],
+  "require": {
+    "nikic/php-parser": "^4.15",
+    "nette/php-generator": "^3.6.9",
+    "symfony/finder": "^5|^6",
+    "symfony/console": "^6.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5.28"
+  },
+  "autoload": {
+    "psr-4": {
+      "Xepozz\\TestIt\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Xepozz\\TestIt\\Tests\\": "tests"
+    }
+  }
+}
