@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\SingleCommandApplication;
+use Xepozz\TestIt\Config;
 use Xepozz\TestIt\TestGenerator;
 
 (new SingleCommandApplication())
@@ -19,8 +20,19 @@ use Xepozz\TestIt\TestGenerator;
     ->addArgument('target', InputArgument::OPTIONAL, 'The output directory where tests will be placed', 'tests')
     ->setCode(function (InputInterface $input, OutputInterface $output) {
         $sourceDirectory = $input->getArgument('source');
-        $testDirectory = $input->getArgument('target');
-        $visitor = new TestGenerator($sourceDirectory, $testDirectory);
+        $targetDirectory = $input->getArgument('target');
+
+        $config = new Config();
+        $configFilePath = getcwd() . '/test-it.php';
+        if (file_exists($configFilePath)) {
+            (require_once $configFilePath)($config);
+        } else {
+            $config
+                ->setSourceDirectory($sourceDirectory)
+                ->setTargetDirectory($targetDirectory);
+        }
+
+        $visitor = new TestGenerator($config);
 
         $visitor->process();
         $output->writeln('All done.');

@@ -6,6 +6,7 @@ namespace Xepozz\TestIt\Tests\Integration;
 
 use Composer\Autoload\ClassLoader;
 use PHPUnit\Framework\TestCase;
+use Xepozz\TestIt\Config;
 use Xepozz\TestIt\TestGenerator;
 use Xepozz\TestIt\Tests\Support\Finder;
 
@@ -21,8 +22,9 @@ abstract class AbstractTestCase extends TestCase
         $loader->addPsr4($this->getSrcNamespace(), $sourceDirectory);
         $loader->addPsr4($this->getTestsNamespace(), $targetDirectory);
 
+        $config = $this->getConfig($sourceDirectory, $targetDirectory);
+        $nodeVisitor = new TestGenerator($config);
         $compareFiles = Finder::getFiles($compareDirectory);
-        $nodeVisitor = new TestGenerator($sourceDirectory, $targetDirectory);
 
         $nodeVisitor->process();
         $resultFiles = Finder::getFiles($targetDirectory);
@@ -46,4 +48,11 @@ abstract class AbstractTestCase extends TestCase
     abstract protected function getSrcNamespace(): string;
 
     abstract protected function getTestsNamespace(): string;
+
+    protected function getConfig(string $sourceDirectory, string $targetDirectory): Config
+    {
+        return (new Config())
+            ->setSourceDirectory($sourceDirectory)
+            ->setTargetDirectory($targetDirectory);
+    }
 }

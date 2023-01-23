@@ -11,7 +11,10 @@ use Nette\PhpGenerator\PhpNamespace;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
-use Xepozz\TestIt\TestGenerator;
+use Xepozz\TestIt\TestGenerator\ClassGenerator;
+use Xepozz\TestIt\TestGenerator\FileGenerator;
+use Xepozz\TestIt\TestGenerator\MethodGenerator;
+use Xepozz\TestIt\TestGenerator\NamespaceGenerator;
 
 class ContextMethodVisitor extends NodeVisitorAbstract
 {
@@ -26,14 +29,14 @@ class ContextMethodVisitor extends NodeVisitorAbstract
     /**
      * @var ClassType[]
      */
-    public array $generatedClasses=[];
+    public array $generatedClasses = [];
     /**
      * @var PhpNamespace[]
      */
-    public array $generatedNamespaces=[];
+    public array $generatedNamespaces = [];
 
     public function __construct(
-        private readonly Context $context = new Context(),
+        private readonly Context $context,
     ) {
     }
 
@@ -41,12 +44,17 @@ class ContextMethodVisitor extends NodeVisitorAbstract
     {
         if ($node instanceof Node\Stmt\Namespace_) {
             $this->context->setNamespace($node);
+            return null;
         }
         if ($node instanceof Node\Stmt\Class_) {
+            if ($this->isClassExcluded($node)) {
+                return NodeTraverser::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
+            }
             $this->context->setClass($node);
+            return null;
         }
         if ($node instanceof Node\Stmt\ClassMethod) {
-            if ($node->isMagic()) {
+            if ($this->isMethodIgnored($node)) {
                 return NodeTraverser::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
             }
             $this->context->setClassMethod($node);
@@ -58,19 +66,28 @@ class ContextMethodVisitor extends NodeVisitorAbstract
     public function leaveNode(Node $node): null
     {
         if ($node instanceof Node\Stmt\Namespace_) {
-            $generator = new TestGenerator\NamespaceGenerator();
-            $this->generatedNamespaces[] = $generator->generate($this->context, $this->generatedClasses);
+            $generator = new NamespaceGenerator();
+            $generated = $generator->generate($this->context, $this->generatedClasses);
+            if ($generated !== null) {
+                $this->generatedNamespaces[] = $generated;
+            }
+            return null;
         }
         if ($node instanceof Node\Stmt\Class_) {
-            $generator = new TestGenerator\ClassGenerator($node);
-            $this->generatedClasses[] = $generator->generate($this->generatedMethods);
-        }
-        if ($node instanceof Node\Stmt\ClassMethod) {
-            if ($node->isMagic()) {
+            if ($this->isClassExcluded($node)) {
                 return null;
             }
-            $generator = new TestGenerator\MethodGenerator($node);
-            array_push($this->generatedMethods, ...$generator->generate($this->context));
+            $generator = new ClassGenerator($node);
+            $this->generatedClasses[] = $generator->generate($this->generatedMethods);
+            return null;
+        }
+        if ($node instanceof Node\Stmt\ClassMethod) {
+            if ($this->isMethodIgnored($node)) {
+                return null;
+            }
+            $generator = new MethodGenerator($this->context);
+            array_push($this->generatedMethods, ...$generator->generate($node));
+            return null;
         }
         return null;
     }
@@ -82,9 +99,19 @@ class ContextMethodVisitor extends NodeVisitorAbstract
     {
         $files = [];
         foreach ($this->generatedNamespaces as $namespace) {
-            $fileGenerator = new TestGenerator\FileGenerator();
+            $fileGenerator = new FileGenerator();
             $files[] = $fileGenerator->generate([$namespace]);
         }
         return $files;
+    }
+
+    private function isClassExcluded(Node\Stmt\Class_ $node): bool
+    {
+        return in_array($node->namespacedName->toString(), $this->context->config->getExcludedClasses());
+    }
+
+    private function isMethodIgnored(Node\Stmt\ClassMethod $node): bool
+    {
+        return $node->isMagic();
     }
 }

@@ -28,44 +28,24 @@ class MethodGenerator
 {
     private Method $method;
     private int $possibleTestsNumbers = 1;
-    private array $possibleTypes = [];
+    private array $possibleReturnTypes = [];
 
     private MethodBodyBuilder $methodBodyBuilder;
     private Dumper $dumper;
     private MatrixIntersection $intersection;
 
-    public function __construct(Stmt\ClassMethod $method)
-    {
-        $testMethod = new Method('test' . ucfirst($method->name->name));
-        $testMethod->setReturnType('void');
-
-        if ($method->isFinal()) {
-            $testMethod->setFinal();
-        }
-        if ($method->isAbstract()) {
-            $testMethod->setAbstract();
-        }
-        if ($method->isStatic()) {
-            $testMethod->setStatic();
-        }
-        if ($method->isProtected()) {
-            $testMethod->setProtected();
-        } elseif ($method->isPrivate()) {
-            $testMethod->setPrivate();
-        } else {
-            $testMethod->setPublic();
-        }
-
-        $this->method = $testMethod;
+    public function __construct(
+        private readonly Context $context,
+    ) {
         $this->dumper = new Dumper();
         $this->intersection = new MatrixIntersection();
         $this->methodBodyBuilder = MethodBodyBuilder::create();
     }
 
-    public function generate(Context $context): array
+    public function generate(Stmt\ClassMethod $method): array
     {
-        $class = $context->class;
-        $method = $context->method;
+        $testMethod = $this->createTestMethod($method);
+        $class = $this->context->class;
         $methodName = $method->name->name;
 
         $methods = [];
@@ -81,14 +61,14 @@ class MethodGenerator
 PHP;
 
             $this->methodBodyBuilder->addAssert($template);
-            $testMethod = $this->method->cloneWithName('test' . ucfirst($method->name->name));
+            $testMethod = $testMethod->cloneWithName('test' . ucfirst($method->name->name));
             $testMethod->addBody($this->methodBodyBuilder->build());
             return [$testMethod];
         } elseif ($this->possibleTestsNumbers > 1) {
             $this->methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
-            array_push($methods, ...$this->addPositiveDataProvider($class, $method));
+            array_push($methods, ...$this->addPositiveTest($class, $method, $testMethod));
             $this->methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
-            array_push($methods, ...$this->addNegativeDataProvider($class, $method));
+            array_push($methods, ...$this->addNegativeTest($class, $method, $testMethod));
         }
 
         return $methods;
@@ -107,7 +87,7 @@ PHP;
         }
         if ($returnType instanceof Identifier) {
             if ($returnType->name === 'true' || $returnType->name === 'false') {
-                $this->possibleTypes[] = $returnType->name;
+                $this->possibleReturnTypes[] = $returnType->name;
             } elseif ($returnType->name === 'bool') {
                 $this->possibleTestsNumbers *= 2;
             } elseif ($returnType->name === 'string' || $returnType->name === 'int') {
@@ -115,7 +95,7 @@ PHP;
             } elseif ($returnType->name === 'array') {
                 $this->possibleTestsNumbers *= 10;
             }
-            $this->possibleTypes[] = $returnType->name;
+            $this->possibleReturnTypes[] = $returnType->name;
             return;
         }
         if ($returnType instanceof UnionType || $returnType instanceof IntersectionType) {
@@ -125,12 +105,12 @@ PHP;
         }
         if ($returnType instanceof NullableType) {
             $this->possibleTestsNumbers++;
-            $this->possibleTypes[] = 'null';
+            $this->possibleReturnTypes[] = 'null';
             $this->processType($returnType->type);
         }
         if ($returnType instanceof FullyQualified) {
             $this->possibleTestsNumbers *= 10;
-            $this->possibleTypes[] = $returnType->toString();
+            $this->possibleReturnTypes[] = $returnType->toString();
         }
     }
 
@@ -151,16 +131,17 @@ PHP;
      * @return Method[]
      * @throws \ReflectionException
      */
-    private function addPositiveDataProvider(
+    private function addPositiveTest(
         Stmt\Class_ $class,
-        Stmt\ClassMethod $method
+        Stmt\ClassMethod $method,
+        Method $testMethod,
     ): array {
         $variableName = '$' . lcfirst($class->name->name);
 
-        $testMethod = $this->method->cloneWithName('test' . ucfirst($method->name->name));
+        $testMethod = $testMethod->cloneWithName('test' . ucfirst($method->name->name));
         $testMethod
             ->addParameter('expectedValue')
-            ->setType(implode('|', array_unique($this->possibleTypes)));
+            ->setType(implode('|', array_unique($this->possibleReturnTypes)));
 
         $arguments = [];
         foreach ($method->getParams() as $parameter) {
@@ -177,13 +158,13 @@ PHP;
 
         $positiveDataProvider = $this->createPositiveDataProvider($method, $testMethod);
 
-        if (count($this->possibleTypes) === 0) {
+        if (count($this->possibleReturnTypes) === 0) {
             $positiveDataProvider->addBody('return [];');
             return [];
         }
         $positiveDataProvider->addBody('return [');
 
-        foreach ($this->possibleTypes as $possibleType) {
+        foreach ($this->possibleReturnTypes as $possibleType) {
             $valueGenerator = $this->valueGenerator($possibleType);
 
             if ($valueGenerator === null) {
@@ -199,7 +180,12 @@ PHP;
                 }
                 $parameterValueGenerators[] = $parameterValueGenerator->generate();
             }
-            $cases = $this->intersection->intersect(...$parameterValueGenerators);
+            $cases = $this->context->config->isCaseEvaluationEnabled()
+                ? $this->intersection->intersect(...$parameterValueGenerators)
+                : $this->intersection->intersect(
+                    $valueGenerator->generate(),
+                    ...$parameterValueGenerators,
+                );
 
             if ($cases === []) {
                 continue;
@@ -207,16 +193,16 @@ PHP;
             $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
             $object = $reflectionClass->newInstanceWithoutConstructor();
             foreach ($cases as $case) {
-                $valuesToPrint = array_map(
-                    fn ($code) => eval(sprintf('return %s;', $code)),
-                    array_map($this->dumper->dump(...), $case)
-                );
+                $valuesToPrint = $this->convertToCodeEntities($case);
                 try {
-                    $result = $object->{$method->name->name}(...$valuesToPrint);
+                    if ($this->context->config->isCaseEvaluationEnabled()) {
+                        $result = $this->evaluateMethod($object, $method, $valuesToPrint);
+                        $case = [$result, ...$case];
+                    }
                 } catch (\Throwable) {
                     continue;
                 }
-                $valuesToPrint = array_map($this->dumper->dump(...), [$result, ...$case]);
+                $valuesToPrint = array_map($this->dumper->dump(...), $case);
                 $case = implode(', ', $valuesToPrint);
                 $positiveDataProvider->addBody("\t[{$case}],");
             }
@@ -233,16 +219,23 @@ PHP;
      * @return Method[]
      * @throws \ReflectionException
      */
-    private function addNegativeDataProvider(
+    private function addNegativeTest(
         Stmt\Class_ $class,
-        Stmt\ClassMethod $method
+        Stmt\ClassMethod $method,
+        Method $testMethod,
     ): array {
+        if (!$this->context->config->isCaseEvaluationEnabled()) {
+            /**
+             * No need to generate negative test because we can check if the result is not successful
+             */
+            return [];
+        }
         $variableName = '$' . lcfirst($class->name->name);
 
-        $testMethod = $this->method->cloneWithName('testInvalid' . ucfirst($method->name->name));
+        $testMethod = $testMethod->cloneWithName('testInvalid' . ucfirst($method->name->name));
         $testMethod
             ->addParameter('expectedValue')
-            ->setType(implode('|', array_unique($this->possibleTypes)));
+            ->setType(implode('|', array_unique($this->possibleReturnTypes)));
 
         $arguments = [];
         foreach ($method->getParams() as $parameter) {
@@ -259,13 +252,13 @@ PHP;
 
         $invalidDataProvider = $this->createNegativeDataProvider($method, $testMethod);
 
-        if (count($this->possibleTypes) === 0) {
+        if (count($this->possibleReturnTypes) === 0) {
             return [];
         }
         $invalidDataProvider->addBody('return [');
 
         $hasInvalidCases = false;
-        foreach ($this->possibleTypes as $possibleType) {
+        foreach ($this->possibleReturnTypes as $possibleType) {
             $valueGenerator = $this->valueGenerator($possibleType);
 
             if ($valueGenerator === null) {
@@ -289,12 +282,9 @@ PHP;
             $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
             $object = $reflectionClass->newInstanceWithoutConstructor();
             foreach ($cases as $case) {
-                $valuesToPrint = array_map(
-                    fn ($code) => eval(sprintf('return %s;', $code)),
-                    array_map($this->dumper->dump(...), $case)
-                );
+                $valuesToPrint = $this->convertToCodeEntities($case);
                 try {
-                    $object->{$method->name->name}(...$valuesToPrint);
+                    $this->evaluateMethod($object, $method, $valuesToPrint);
                 } catch (\Throwable $e) {
                     $case = implode(', ', $valuesToPrint);
                     $invalidDataProvider->addBody("\t[{$case}],");
@@ -358,5 +348,42 @@ PHP;
     private function getParameterType(mixed $parameter): string
     {
         return $parameter->type?->toString() ?? 'mixed';
+    }
+
+    private function convertToCodeEntities(mixed $case): array
+    {
+        return array_map(
+            fn ($code) => eval(sprintf('return %s;', $code)),
+            array_map($this->dumper->dump(...), $case)
+        );
+    }
+
+    private function createTestMethod(Stmt\ClassMethod $method): Method
+    {
+        $testMethod = new Method('test' . ucfirst($method->name->name));
+        $testMethod->setReturnType('void');
+
+        if ($method->isFinal()) {
+            $testMethod->setFinal();
+        }
+        if ($method->isAbstract()) {
+            $testMethod->setAbstract();
+        }
+        if ($method->isStatic()) {
+            $testMethod->setStatic();
+        }
+        if ($method->isProtected()) {
+            $testMethod->setProtected();
+        } elseif ($method->isPrivate()) {
+            $testMethod->setPrivate();
+        } else {
+            $testMethod->setPublic();
+        }
+        return $testMethod;
+    }
+
+    private function evaluateMethod(object $object, Stmt\ClassMethod $method, array $values): mixed
+    {
+        return $object->{$method->name->name}(...$values);
     }
 }

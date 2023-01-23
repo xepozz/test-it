@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Xepozz\TestIt\Parser;
 
 use PhpParser\Node;
+use Xepozz\TestIt\Config;
 
 class Context
 {
@@ -20,8 +21,7 @@ class Context
     public Node\Stmt\ClassMethod $method;
 
     public function __construct(
-        public readonly string $sourceDirectory,
-        public readonly string $targetDirectory,
+        public readonly Config $config,
     ) {
     }
 
