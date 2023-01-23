@@ -83,6 +83,44 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
 
 As we can see it generates a `dataProvider` related to a function, evaluates return values and saves it to the data provider function.
 
+### Config file
+
+Create a file with name `test-it.php` in project root if you need to configure generation process and configure the config as you wish.
+
+Here is an example of possible options to configure:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Xepozz\TestIt\Config;
+
+return function (Config $config) {
+    $config
+        // disabled results substitution
+        ->evaluateCases(false)
+        // sets a directory to scan
+        ->setSourceDirectory('src')
+        // excludes particular files from scanning
+        ->excludeFiles([
+            __DIR__ . '/src/Kernel.php',
+        ])
+        // excludes particular directories and all child directories from scanning
+        ->excludeDirectories([
+            __DIR__ . '/src/Asset',
+            __DIR__ . '/src/Controller',
+            __DIR__ . '/src/View',
+        ])
+        // includes subdirectories when parent directories were ignored
+        ->includeDirectories([
+            __DIR__ . '/src/Controller/DTO',
+        ]);
+};
+```
+
+> Passing command arguments does not make any changes the config
+
 ### Help
 
 Call the script with the flag `--help` to see all the possible options.
@@ -114,7 +152,11 @@ Options:
 - [ ] Test constant expression when a method always returns the same result
 - [ ] Add benchmarks
 - [ ] Add static analyzer
-- [ ] Add exclusion list, paths and inheritance tree 
+- [ ] Add exclusion list
+  - [X] Paths (directories, files)
+  - [X] Classes
+  - [ ] Inheritance tree (interfaces, parent classes)
+- [ ] Override config with command arguments
 - [ ] Add Codeception support
 
 ### Restrictions
