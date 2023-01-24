@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Xepozz\TestIt\ValueGenerator;
 
-class BooleanValueGenerator implements ValueGeneratorInterface
+final class BooleanValueGenerator implements ValueGeneratorInterface
 {
-    public function generate(): \Generator
+    public function generate(): iterable
     {
         yield true;
         yield false;

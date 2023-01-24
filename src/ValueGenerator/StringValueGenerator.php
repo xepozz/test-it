@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Xepozz\TestIt\ValueGenerator;
 
-class StringValueGenerator implements ValueGeneratorInterface
+final class StringValueGenerator implements ValueGeneratorInterface
 {
-    public function generate(): \Generator
+    public function generate(): iterable
     {
         yield '';
         yield 'null';

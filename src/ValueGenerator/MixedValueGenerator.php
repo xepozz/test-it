@@ -6,9 +6,9 @@ namespace Xepozz\TestIt\ValueGenerator;
 
 use Nette\PhpGenerator\Literal;
 
-class MixedValueGenerator implements ValueGeneratorInterface
+final class MixedValueGenerator implements ValueGeneratorInterface
 {
-    public function generate(): \Generator
+    public function generate(): iterable
     {
         yield 0;
         yield 'value';

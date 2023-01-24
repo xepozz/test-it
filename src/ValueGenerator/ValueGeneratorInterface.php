@@ -6,5 +6,5 @@ namespace Xepozz\TestIt\ValueGenerator;
 
 interface ValueGeneratorInterface
 {
-    public function generate(): \Generator;
+    public function generate(): iterable;
 }

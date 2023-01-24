@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Xepozz\TestIt\ValueGenerator;
 
-class ArrayValueGenerator implements ValueGeneratorInterface
+final class ArrayValueGenerator implements ValueGeneratorInterface
 {
-    public function generate(): \Generator
+    public function generate(): iterable
     {
         yield [];
         yield [[], []];
