@@ -21,6 +21,10 @@ abstract class AbstractTestCase extends TestCase
         $compareDirectory = $this->getTestDirectory() . DIRECTORY_SEPARATOR . 'tests';
         $loader->addPsr4($this->getSrcNamespace(), $sourceDirectory);
         $loader->addPsr4($this->getTestsNamespace(), $targetDirectory);
+        $compareFiles = Finder::getFiles($targetDirectory);
+        foreach ($compareFiles as $file) {
+            unlink($file->getRealPath());
+        }
 
         $config = $this->getConfig($sourceDirectory, $targetDirectory);
         $nodeVisitor = new TestGenerator($config);

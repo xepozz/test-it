@@ -78,7 +78,10 @@ class ContextMethodVisitor extends NodeVisitorAbstract
                 return null;
             }
             $generator = new ClassGenerator($node);
-            $this->generatedClasses[] = $generator->generate($this->generatedMethods);
+            $generated = $generator->generate($this->generatedMethods);
+            if ($generated !== null) {
+                $this->generatedClasses[] = $generated;
+            }
             return null;
         }
         if ($node instanceof Node\Stmt\ClassMethod) {
