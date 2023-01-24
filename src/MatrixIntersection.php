@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Xepozz\TestIt;
 
-class MatrixIntersection
+final class MatrixIntersection
 {
     /**
      * @param \Iterator[] $generators
-     * @return array
+     * @return array[]
      */
     public function intersect(iterable ...$generators): iterable
     {

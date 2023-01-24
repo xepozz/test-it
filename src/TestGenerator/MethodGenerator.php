@@ -12,17 +12,14 @@ use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\NullableType;
 use PhpParser\Node\Param;
 use PhpParser\Node\Stmt;
+use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\UnionType;
 use Xepozz\TestIt\MatrixIntersection;
 use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\Parser\Context;
-use Xepozz\TestIt\ValueGenerator\ArrayValueGenerator;
-use Xepozz\TestIt\ValueGenerator\BooleanValueGenerator;
-use Xepozz\TestIt\ValueGenerator\IntegerValueGenerator;
-use Xepozz\TestIt\ValueGenerator\MixedValueGenerator;
-use Xepozz\TestIt\ValueGenerator\NullValueGenerator;
-use Xepozz\TestIt\ValueGenerator\StringValueGenerator;
-use Xepozz\TestIt\ValueGenerator\ValueGeneratorInterface;
+use Xepozz\TestIt\TypeSerializer;
+use Xepozz\TestIt\ValueGeneratorRepository;
 
 class MethodGenerator
 {
@@ -33,10 +30,14 @@ class MethodGenerator
     private MethodBodyBuilder $methodBodyBuilder;
     private Dumper $dumper;
     private MatrixIntersection $intersection;
+    private ValueGeneratorRepository $valueGeneratorRepository;
+    private TypeSerializer $typeSerializer;
 
     public function __construct(
         private readonly Context $context,
     ) {
+        $this->typeSerializer = new TypeSerializer();
+        $this->valueGeneratorRepository = new ValueGeneratorRepository();
         $this->dumper = new Dumper();
         $this->intersection = new MatrixIntersection();
         $this->methodBodyBuilder = MethodBodyBuilder::create();
@@ -126,8 +127,9 @@ PHP;
     }
 
     /**
-     * @param Stmt\Class_ $class
-     * @param Stmt\ClassMethod $method
+     * @param Class_ $class
+     * @param ClassMethod $method
+     * @param Method $testMethod
      * @return Method[]
      * @throws \ReflectionException
      */
@@ -149,7 +151,7 @@ PHP;
             $arguments[] = '$' . $parameterName;
             $testMethod
                 ->addParameter($parameterName)
-                ->setType($this->getParameterType($parameter));
+                ->setType($this->typeSerializer->serialize($parameter->type));
         }
         $arguments = $arguments === [] ? null : implode(', ', $arguments);
 
@@ -163,8 +165,11 @@ PHP;
             return [];
         }
 
+        $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
+        $object = $reflectionClass->newInstanceWithoutConstructor();
+
         foreach ($this->possibleReturnTypes as $possibleType) {
-            $valueGenerator = $this->valueGenerator($possibleType);
+            $valueGenerator = $this->valueGeneratorRepository->getByType($possibleType);
 
             if ($valueGenerator === null) {
                 continue;
@@ -172,7 +177,9 @@ PHP;
 
             $parameterValueGenerators = [];
             foreach ($method->getParams() as $parameter) {
-                $parameterValueGenerator = $this->valueGenerator($this->getParameterType($parameter));
+                $parameterValueGenerator = $this->valueGeneratorRepository->getByType(
+                    $this->typeSerializer->serialize($parameter->type)
+                );
 
                 if ($parameterValueGenerator === null) {
                     continue;
@@ -189,8 +196,6 @@ PHP;
             if ($cases === []) {
                 continue;
             }
-            $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
-            $object = $reflectionClass->newInstanceWithoutConstructor();
             foreach ($cases as $case) {
                 $valuesToPrint = $this->convertToCodeEntities($case);
                 try {
@@ -241,7 +246,7 @@ PHP;
             $arguments[] = '$' . $parameterName;
             $testMethod
                 ->addParameter($parameterName)
-                ->setType($this->getParameterType($parameter));
+                ->setType($this->typeSerializer->serialize($parameter->type));
         }
         $arguments = $arguments === [] ? null : implode(', ', $arguments);
 
@@ -253,18 +258,16 @@ PHP;
         if (count($this->possibleReturnTypes) === 0) {
             return [];
         }
+        $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
+        $object = $reflectionClass->newInstanceWithoutConstructor();
 
         $hasInvalidCases = false;
         foreach ($this->possibleReturnTypes as $possibleType) {
-            $valueGenerator = $this->valueGenerator($possibleType);
-
-            if ($valueGenerator === null) {
-                continue;
-            }
-
             $parameterValueGenerators = [];
             foreach ($method->getParams() as $parameter) {
-                $parameterValueGenerator = $this->valueGenerator($this->getParameterType($parameter));
+                $parameterValueGenerator = $this->valueGeneratorRepository->getByType(
+                    $this->typeSerializer->serialize($parameter->type)
+                );
 
                 if ($parameterValueGenerator === null) {
                     continue;
@@ -276,8 +279,6 @@ PHP;
             if ($cases === []) {
                 continue;
             }
-            $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
-            $object = $reflectionClass->newInstanceWithoutConstructor();
             foreach ($cases as $case) {
                 $valuesToPrint = $this->convertToCodeEntities($case);
                 try {
@@ -296,19 +297,6 @@ PHP;
         } else {
             return [];
         }
-    }
-
-    private function valueGenerator(mixed $possibleType): ?ValueGeneratorInterface
-    {
-        return match ($possibleType) {
-            'array' => new ArrayValueGenerator(),
-            'bool' => new BooleanValueGenerator(),
-            'null' => new NullValueGenerator(),
-            'string' => new StringValueGenerator(),
-            'int' => new IntegerValueGenerator(),
-            'mixed' => new MixedValueGenerator(),
-            default => null,
-        };
     }
 
     private function createPositiveDataProvider(
