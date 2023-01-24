@@ -10,6 +10,7 @@ use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use Xepozz\TestIt\MethodBodyBuilder;
+use Xepozz\TestIt\MethodEvaluator;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
 use Xepozz\TestIt\TypeSerializer;
@@ -23,6 +24,7 @@ class MethodGenerator
     private TypeNormalizer $typeNormalizer;
     private TypeSerializer $typeSerializer;
     private TestCaseGenerator $testCaseGenerator;
+    private MethodEvaluator $methodEvaluator;
 
     public function __construct(
         private readonly Context $context,
@@ -31,6 +33,7 @@ class MethodGenerator
         $this->typeSerializer = new TypeSerializer();
         $this->dumper = new Dumper();
         $this->testCaseGenerator = new TestCaseGenerator();
+        $this->methodEvaluator = new MethodEvaluator();
 
         $this->methodBodyBuilder = MethodBodyBuilder::create();
     }
@@ -103,16 +106,13 @@ PHP;
 
         $positiveDataProvider = $this->createPositiveDataProvider($method, $testMethod);
 
-        $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
-        $object = $reflectionClass->newInstanceWithoutConstructor();
-
         $cases = $this->testCaseGenerator->generate($this->context);
 
         foreach ($cases as $case) {
             $valuesToPrint = $this->convertToCodeEntities($case);
             try {
                 if ($this->context->config->isCaseEvaluationEnabled()) {
-                    $result = $this->evaluateMethod($object, $method, $valuesToPrint);
+                    $result = $this->methodEvaluator->evaluate($this->context, $valuesToPrint);
                     $case = [$result, ...$case];
                 }
             } catch (\Throwable) {
@@ -167,16 +167,13 @@ PHP;
 
         $invalidDataProvider = $this->createNegativeDataProvider($method, $testMethod);
 
-        $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
-        $object = $reflectionClass->newInstanceWithoutConstructor();
-
         $hasInvalidCases = false;
         $cases = $this->testCaseGenerator->generate($this->context);
 
         foreach ($cases as $case) {
             $valuesToPrint = $this->convertToCodeEntities($case);
             try {
-                $this->evaluateMethod($object, $method, $valuesToPrint);
+                $this->methodEvaluator->evaluate($this->context, $valuesToPrint);
             } catch (\Throwable $e) {
                 $case = implode(', ', $valuesToPrint);
                 $invalidDataProvider->addBody("yield [{$case}];");
@@ -251,10 +248,5 @@ PHP;
             $testMethod->setPublic();
         }
         return $testMethod;
-    }
-
-    private function evaluateMethod(object $object, Stmt\ClassMethod $method, array $values): mixed
-    {
-        return $object->{$method->name->name}(...$values);
     }
 }
