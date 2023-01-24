@@ -31,4 +31,18 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
         yield [[['value']], [['value']]];
         yield [[[0]], [[0]]];
     }
+
+
+    public function testArray(): void
+    {
+        // arrange
+        $expectedValue = ['key' => 'value'];
+        $userController = new UserController();
+
+        // act
+        $actualValue = $userController->array();
+
+        // assert
+        $this->assertEquals($expectedValue, $actualValue);
+    }
 }

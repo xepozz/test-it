@@ -15,7 +15,7 @@ final class PhpEntitiesConverter
         $this->dumper = new Dumper();
     }
 
-    public function convert(mixed $case): array
+    public function convert(array $case): array
     {
         return array_map(
             fn ($code) => eval(sprintf('return %s;', $code)),

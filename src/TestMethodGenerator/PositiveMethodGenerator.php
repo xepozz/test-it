@@ -96,7 +96,7 @@ final class PositiveMethodGenerator implements TestMethodGeneratorInterface
         return [$testMethod, $positiveDataProvider];
     }
 
-    public function supports(Context $context, array $cases): bool
+    public function supports(Context $context, iterable $cases): bool
     {
         return true;
     }

@@ -16,5 +16,5 @@ interface TestMethodGeneratorInterface
      */
     public function generate(Context $context, array $cases): iterable;
 
-    public function supports(Context $context, array $cases): bool;
+    public function supports(Context $context, iterable $cases): bool;
 }

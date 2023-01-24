@@ -96,7 +96,7 @@ final class NegativeMethodGenerator implements TestMethodGeneratorInterface
         return [$testMethod, $invalidDataProvider];
     }
 
-    public function supports(Context $context, array $cases): bool
+    public function supports(Context $context, iterable $cases): bool
     {
         foreach ($cases as $case) {
             $valuesToPrint = $this->phpEntitiesConverter->convert($case);

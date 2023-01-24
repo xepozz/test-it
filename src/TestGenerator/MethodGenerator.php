@@ -6,6 +6,7 @@ namespace Xepozz\TestIt\TestGenerator;
 
 use Nette\PhpGenerator\Method;
 use Xepozz\TestIt\Parser\Context;
+use Xepozz\TestIt\TestMethodGenerator\ExactlyMethodGenerator;
 use Xepozz\TestIt\TestMethodGenerator\NegativeMethodGenerator;
 use Xepozz\TestIt\TestMethodGenerator\NoAssertionGenerator;
 use Xepozz\TestIt\TestMethodGenerator\PositiveMethodGenerator;
@@ -24,6 +25,7 @@ class MethodGenerator
         $this->testCaseGenerator = new TestCaseGenerator();
         $this->methodGenerators = [
             new NoAssertionGenerator(),
+            new ExactlyMethodGenerator(),
             new PositiveMethodGenerator(),
             new NegativeMethodGenerator(),
         ];
