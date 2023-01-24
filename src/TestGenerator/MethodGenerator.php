@@ -6,36 +6,31 @@ namespace Xepozz\TestIt\TestGenerator;
 
 use Nette\PhpGenerator\Dumper;
 use Nette\PhpGenerator\Method;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\IntersectionType;
-use PhpParser\Node\Name\FullyQualified;
-use PhpParser\Node\NullableType;
-use PhpParser\Node\Param;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\UnionType;
 use Xepozz\TestIt\MatrixIntersection;
 use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\Parser\Context;
+use Xepozz\TestIt\TypeNormalizer;
 use Xepozz\TestIt\TypeSerializer;
 use Xepozz\TestIt\ValueGeneratorRepository;
 
 class MethodGenerator
 {
-    private Method $method;
-    private int $possibleTestsNumbers = 1;
     private array $possibleReturnTypes = [];
 
     private MethodBodyBuilder $methodBodyBuilder;
     private Dumper $dumper;
     private MatrixIntersection $intersection;
     private ValueGeneratorRepository $valueGeneratorRepository;
+    private TypeNormalizer $typeNormalizer;
     private TypeSerializer $typeSerializer;
 
     public function __construct(
         private readonly Context $context,
     ) {
+        $this->typeNormalizer = new TypeNormalizer();
         $this->typeSerializer = new TypeSerializer();
         $this->valueGeneratorRepository = new ValueGeneratorRepository();
         $this->dumper = new Dumper();
@@ -52,9 +47,10 @@ class MethodGenerator
         $methods = [];
         $variableName = '$' . lcfirst($class->name->name);
 
-        $this->calculatePossibleTestsNumber($method);
+        // TODO: calc parameters types?
+        $this->possibleReturnTypes = $this->typeNormalizer->denormalize($method->getReturnType());
 
-        if ($this->possibleTestsNumbers === 1) {
+        if (count($this->possibleReturnTypes) === 0) {
             $this->methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
             $template = <<<PHP
 \$this->expectNotToPerformAssertions();
@@ -65,67 +61,14 @@ PHP;
             $testMethod = $testMethod->cloneWithName('test' . ucfirst($method->name->name));
             $testMethod->addBody($this->methodBodyBuilder->build());
             return [$testMethod];
-        } elseif ($this->possibleTestsNumbers > 1) {
-            $this->methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
-            array_push($methods, ...$this->addPositiveTest($class, $method, $testMethod));
-            $this->methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
-            array_push($methods, ...$this->addNegativeTest($class, $method, $testMethod));
         }
+
+        $this->methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
+        array_push($methods, ...$this->addPositiveTest($class, $method, $testMethod));
+        $this->methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
+        array_push($methods, ...$this->addNegativeTest($class, $method, $testMethod));
 
         return $methods;
-    }
-
-    private function calculatePossibleTestsNumber(Stmt\ClassMethod $method): void
-    {
-//        $this->processParameters($method->getParams());
-        $this->processType($method->getReturnType());
-    }
-
-    private function processType(mixed $returnType): void
-    {
-        if ($returnType === null) {
-            return;
-        }
-        if ($returnType instanceof Identifier) {
-            if ($returnType->name === 'true' || $returnType->name === 'false') {
-                $this->possibleReturnTypes[] = $returnType->toString();
-            } elseif ($returnType->name === 'bool') {
-                $this->possibleTestsNumbers *= 2;
-            } elseif ($returnType->name === 'string' || $returnType->name === 'int') {
-                $this->possibleTestsNumbers *= 10;
-            } elseif ($returnType->name === 'array') {
-                $this->possibleTestsNumbers *= 10;
-            }
-            $this->possibleReturnTypes[] = $returnType->toString();
-            return;
-        }
-        if ($returnType instanceof NullableType) {
-            $this->possibleTestsNumbers++;
-            $this->possibleReturnTypes[] = 'null';
-            $this->processType($returnType->type);
-            return;
-        }
-        if ($returnType instanceof FullyQualified) {
-            $this->possibleTestsNumbers *= 10;
-            $this->possibleReturnTypes[] = $returnType->toString();
-            return;
-        }
-        if ($returnType instanceof UnionType || $returnType instanceof IntersectionType) {
-            foreach ($returnType->types as $type) {
-                $this->processType($type);
-            }
-        }
-    }
-
-    /**
-     * @param Param[] $parameters
-     * @return void
-     */
-    private function processParameters(array $parameters): void
-    {
-        foreach ($parameters as $parameter) {
-            $this->processType($parameter->type);
-        }
     }
 
     /**
@@ -145,7 +88,7 @@ PHP;
         $testMethod = $testMethod->cloneWithName('test' . ucfirst($method->name->name));
         $testMethod
             ->addParameter('expectedValue')
-            ->setType(implode('|', array_unique($this->possibleReturnTypes)));
+            ->setType($this->typeSerializer->serialize($this->possibleReturnTypes));
 
         $arguments = [];
         foreach ($method->getParams() as $parameter) {
@@ -153,7 +96,7 @@ PHP;
             $arguments[] = '$' . $parameterName;
             $testMethod
                 ->addParameter($parameterName)
-                ->setType($this->typeSerializer->serialize($parameter->type));
+                ->setType($this->typeSerializer->serialize($this->typeNormalizer->denormalize($parameter->type)));
         }
         $arguments = $arguments === [] ? null : implode(', ', $arguments);
 
@@ -161,11 +104,6 @@ PHP;
         $this->methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
 
         $positiveDataProvider = $this->createPositiveDataProvider($method, $testMethod);
-
-        if (count($this->possibleReturnTypes) === 0) {
-            $positiveDataProvider->addBody('return [];');
-            return [];
-        }
 
         $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
         $object = $reflectionClass->newInstanceWithoutConstructor();
@@ -180,7 +118,7 @@ PHP;
             $parameterValueGenerators = [];
             foreach ($method->getParams() as $parameter) {
                 $parameterValueGenerator = $this->valueGeneratorRepository->getByType(
-                    $this->typeSerializer->serialize($parameter->type)
+                    $this->typeNormalizer->denormalize($parameter->type)[0]
                 );
 
                 if ($parameterValueGenerator === null) {
@@ -240,7 +178,7 @@ PHP;
         $testMethod = $testMethod->cloneWithName('testInvalid' . ucfirst($method->name->name));
         $testMethod
             ->addParameter('expectedValue')
-            ->setType(implode('|', array_unique($this->possibleReturnTypes)));
+            ->setType($this->typeSerializer->serialize($this->possibleReturnTypes));
 
         $arguments = [];
         foreach ($method->getParams() as $parameter) {
@@ -248,7 +186,7 @@ PHP;
             $arguments[] = '$' . $parameterName;
             $testMethod
                 ->addParameter($parameterName)
-                ->setType($this->typeSerializer->serialize($parameter->type));
+                ->setType($this->typeSerializer->serialize($this->typeNormalizer->denormalize($parameter->type)));
         }
         $arguments = $arguments === [] ? null : implode(', ', $arguments);
 
@@ -257,9 +195,6 @@ PHP;
 
         $invalidDataProvider = $this->createNegativeDataProvider($method, $testMethod);
 
-        if (count($this->possibleReturnTypes) === 0) {
-            return [];
-        }
         $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
         $object = $reflectionClass->newInstanceWithoutConstructor();
 
@@ -268,7 +203,7 @@ PHP;
             $parameterValueGenerators = [];
             foreach ($method->getParams() as $parameter) {
                 $parameterValueGenerator = $this->valueGeneratorRepository->getByType(
-                    $this->typeSerializer->serialize($parameter->type)
+                    $this->typeNormalizer->denormalize($parameter->type)[0]
                 );
 
                 if ($parameterValueGenerator === null) {
@@ -329,11 +264,6 @@ PHP;
         $dataProvider->setStatic();
 
         return $dataProvider;
-    }
-
-    private function getParameterType(mixed $parameter): string
-    {
-        return $parameter->type?->toString() ?? 'mixed';
     }
 
     private function convertToCodeEntities(mixed $case): array
