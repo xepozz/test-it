@@ -24,14 +24,12 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderInverse(): array
+    public static function dataProviderInverse(): iterable
     {
-        return [
-            [true, true],
-            [true, false],
-            [false, true],
-            [false, false],
-        ];
+        yield [true, true];
+        yield [true, false];
+        yield [false, true];
+        yield [false, false];
     }
 
 
@@ -51,134 +49,132 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderDiff(): array
+    public static function dataProviderDiff(): iterable
     {
-        return [
-            [PHP_INT_MIN, PHP_INT_MIN, PHP_INT_MIN],
-            [PHP_INT_MIN, PHP_INT_MIN, -1],
-            [PHP_INT_MIN, PHP_INT_MIN, 0],
-            [PHP_INT_MIN, PHP_INT_MIN, 1],
-            [PHP_INT_MIN, PHP_INT_MIN, PHP_INT_MAX],
-            [PHP_INT_MIN, -1, PHP_INT_MIN],
-            [PHP_INT_MIN, -1, -1],
-            [PHP_INT_MIN, -1, 0],
-            [PHP_INT_MIN, -1, 1],
-            [PHP_INT_MIN, -1, PHP_INT_MAX],
-            [PHP_INT_MIN, 0, PHP_INT_MIN],
-            [PHP_INT_MIN, 0, -1],
-            [PHP_INT_MIN, 0, 0],
-            [PHP_INT_MIN, 0, 1],
-            [PHP_INT_MIN, 0, PHP_INT_MAX],
-            [PHP_INT_MIN, 1, PHP_INT_MIN],
-            [PHP_INT_MIN, 1, -1],
-            [PHP_INT_MIN, 1, 0],
-            [PHP_INT_MIN, 1, 1],
-            [PHP_INT_MIN, 1, PHP_INT_MAX],
-            [PHP_INT_MIN, PHP_INT_MAX, PHP_INT_MIN],
-            [PHP_INT_MIN, PHP_INT_MAX, -1],
-            [PHP_INT_MIN, PHP_INT_MAX, 0],
-            [PHP_INT_MIN, PHP_INT_MAX, 1],
-            [PHP_INT_MIN, PHP_INT_MAX, PHP_INT_MAX],
-            [-1, PHP_INT_MIN, PHP_INT_MIN],
-            [-1, PHP_INT_MIN, -1],
-            [-1, PHP_INT_MIN, 0],
-            [-1, PHP_INT_MIN, 1],
-            [-1, PHP_INT_MIN, PHP_INT_MAX],
-            [-1, -1, PHP_INT_MIN],
-            [-1, -1, -1],
-            [-1, -1, 0],
-            [-1, -1, 1],
-            [-1, -1, PHP_INT_MAX],
-            [-1, 0, PHP_INT_MIN],
-            [-1, 0, -1],
-            [-1, 0, 0],
-            [-1, 0, 1],
-            [-1, 0, PHP_INT_MAX],
-            [-1, 1, PHP_INT_MIN],
-            [-1, 1, -1],
-            [-1, 1, 0],
-            [-1, 1, 1],
-            [-1, 1, PHP_INT_MAX],
-            [-1, PHP_INT_MAX, PHP_INT_MIN],
-            [-1, PHP_INT_MAX, -1],
-            [-1, PHP_INT_MAX, 0],
-            [-1, PHP_INT_MAX, 1],
-            [-1, PHP_INT_MAX, PHP_INT_MAX],
-            [0, PHP_INT_MIN, PHP_INT_MIN],
-            [0, PHP_INT_MIN, -1],
-            [0, PHP_INT_MIN, 0],
-            [0, PHP_INT_MIN, 1],
-            [0, PHP_INT_MIN, PHP_INT_MAX],
-            [0, -1, PHP_INT_MIN],
-            [0, -1, -1],
-            [0, -1, 0],
-            [0, -1, 1],
-            [0, -1, PHP_INT_MAX],
-            [0, 0, PHP_INT_MIN],
-            [0, 0, -1],
-            [0, 0, 0],
-            [0, 0, 1],
-            [0, 0, PHP_INT_MAX],
-            [0, 1, PHP_INT_MIN],
-            [0, 1, -1],
-            [0, 1, 0],
-            [0, 1, 1],
-            [0, 1, PHP_INT_MAX],
-            [0, PHP_INT_MAX, PHP_INT_MIN],
-            [0, PHP_INT_MAX, -1],
-            [0, PHP_INT_MAX, 0],
-            [0, PHP_INT_MAX, 1],
-            [0, PHP_INT_MAX, PHP_INT_MAX],
-            [1, PHP_INT_MIN, PHP_INT_MIN],
-            [1, PHP_INT_MIN, -1],
-            [1, PHP_INT_MIN, 0],
-            [1, PHP_INT_MIN, 1],
-            [1, PHP_INT_MIN, PHP_INT_MAX],
-            [1, -1, PHP_INT_MIN],
-            [1, -1, -1],
-            [1, -1, 0],
-            [1, -1, 1],
-            [1, -1, PHP_INT_MAX],
-            [1, 0, PHP_INT_MIN],
-            [1, 0, -1],
-            [1, 0, 0],
-            [1, 0, 1],
-            [1, 0, PHP_INT_MAX],
-            [1, 1, PHP_INT_MIN],
-            [1, 1, -1],
-            [1, 1, 0],
-            [1, 1, 1],
-            [1, 1, PHP_INT_MAX],
-            [1, PHP_INT_MAX, PHP_INT_MIN],
-            [1, PHP_INT_MAX, -1],
-            [1, PHP_INT_MAX, 0],
-            [1, PHP_INT_MAX, 1],
-            [1, PHP_INT_MAX, PHP_INT_MAX],
-            [PHP_INT_MAX, PHP_INT_MIN, PHP_INT_MIN],
-            [PHP_INT_MAX, PHP_INT_MIN, -1],
-            [PHP_INT_MAX, PHP_INT_MIN, 0],
-            [PHP_INT_MAX, PHP_INT_MIN, 1],
-            [PHP_INT_MAX, PHP_INT_MIN, PHP_INT_MAX],
-            [PHP_INT_MAX, -1, PHP_INT_MIN],
-            [PHP_INT_MAX, -1, -1],
-            [PHP_INT_MAX, -1, 0],
-            [PHP_INT_MAX, -1, 1],
-            [PHP_INT_MAX, -1, PHP_INT_MAX],
-            [PHP_INT_MAX, 0, PHP_INT_MIN],
-            [PHP_INT_MAX, 0, -1],
-            [PHP_INT_MAX, 0, 0],
-            [PHP_INT_MAX, 0, 1],
-            [PHP_INT_MAX, 0, PHP_INT_MAX],
-            [PHP_INT_MAX, 1, PHP_INT_MIN],
-            [PHP_INT_MAX, 1, -1],
-            [PHP_INT_MAX, 1, 0],
-            [PHP_INT_MAX, 1, 1],
-            [PHP_INT_MAX, 1, PHP_INT_MAX],
-            [PHP_INT_MAX, PHP_INT_MAX, PHP_INT_MIN],
-            [PHP_INT_MAX, PHP_INT_MAX, -1],
-            [PHP_INT_MAX, PHP_INT_MAX, 0],
-            [PHP_INT_MAX, PHP_INT_MAX, 1],
-            [PHP_INT_MAX, PHP_INT_MAX, PHP_INT_MAX],
-        ];
+        yield [PHP_INT_MIN, PHP_INT_MIN, PHP_INT_MIN];
+        yield [PHP_INT_MIN, PHP_INT_MIN, -1];
+        yield [PHP_INT_MIN, PHP_INT_MIN, 0];
+        yield [PHP_INT_MIN, PHP_INT_MIN, 1];
+        yield [PHP_INT_MIN, PHP_INT_MIN, PHP_INT_MAX];
+        yield [PHP_INT_MIN, -1, PHP_INT_MIN];
+        yield [PHP_INT_MIN, -1, -1];
+        yield [PHP_INT_MIN, -1, 0];
+        yield [PHP_INT_MIN, -1, 1];
+        yield [PHP_INT_MIN, -1, PHP_INT_MAX];
+        yield [PHP_INT_MIN, 0, PHP_INT_MIN];
+        yield [PHP_INT_MIN, 0, -1];
+        yield [PHP_INT_MIN, 0, 0];
+        yield [PHP_INT_MIN, 0, 1];
+        yield [PHP_INT_MIN, 0, PHP_INT_MAX];
+        yield [PHP_INT_MIN, 1, PHP_INT_MIN];
+        yield [PHP_INT_MIN, 1, -1];
+        yield [PHP_INT_MIN, 1, 0];
+        yield [PHP_INT_MIN, 1, 1];
+        yield [PHP_INT_MIN, 1, PHP_INT_MAX];
+        yield [PHP_INT_MIN, PHP_INT_MAX, PHP_INT_MIN];
+        yield [PHP_INT_MIN, PHP_INT_MAX, -1];
+        yield [PHP_INT_MIN, PHP_INT_MAX, 0];
+        yield [PHP_INT_MIN, PHP_INT_MAX, 1];
+        yield [PHP_INT_MIN, PHP_INT_MAX, PHP_INT_MAX];
+        yield [-1, PHP_INT_MIN, PHP_INT_MIN];
+        yield [-1, PHP_INT_MIN, -1];
+        yield [-1, PHP_INT_MIN, 0];
+        yield [-1, PHP_INT_MIN, 1];
+        yield [-1, PHP_INT_MIN, PHP_INT_MAX];
+        yield [-1, -1, PHP_INT_MIN];
+        yield [-1, -1, -1];
+        yield [-1, -1, 0];
+        yield [-1, -1, 1];
+        yield [-1, -1, PHP_INT_MAX];
+        yield [-1, 0, PHP_INT_MIN];
+        yield [-1, 0, -1];
+        yield [-1, 0, 0];
+        yield [-1, 0, 1];
+        yield [-1, 0, PHP_INT_MAX];
+        yield [-1, 1, PHP_INT_MIN];
+        yield [-1, 1, -1];
+        yield [-1, 1, 0];
+        yield [-1, 1, 1];
+        yield [-1, 1, PHP_INT_MAX];
+        yield [-1, PHP_INT_MAX, PHP_INT_MIN];
+        yield [-1, PHP_INT_MAX, -1];
+        yield [-1, PHP_INT_MAX, 0];
+        yield [-1, PHP_INT_MAX, 1];
+        yield [-1, PHP_INT_MAX, PHP_INT_MAX];
+        yield [0, PHP_INT_MIN, PHP_INT_MIN];
+        yield [0, PHP_INT_MIN, -1];
+        yield [0, PHP_INT_MIN, 0];
+        yield [0, PHP_INT_MIN, 1];
+        yield [0, PHP_INT_MIN, PHP_INT_MAX];
+        yield [0, -1, PHP_INT_MIN];
+        yield [0, -1, -1];
+        yield [0, -1, 0];
+        yield [0, -1, 1];
+        yield [0, -1, PHP_INT_MAX];
+        yield [0, 0, PHP_INT_MIN];
+        yield [0, 0, -1];
+        yield [0, 0, 0];
+        yield [0, 0, 1];
+        yield [0, 0, PHP_INT_MAX];
+        yield [0, 1, PHP_INT_MIN];
+        yield [0, 1, -1];
+        yield [0, 1, 0];
+        yield [0, 1, 1];
+        yield [0, 1, PHP_INT_MAX];
+        yield [0, PHP_INT_MAX, PHP_INT_MIN];
+        yield [0, PHP_INT_MAX, -1];
+        yield [0, PHP_INT_MAX, 0];
+        yield [0, PHP_INT_MAX, 1];
+        yield [0, PHP_INT_MAX, PHP_INT_MAX];
+        yield [1, PHP_INT_MIN, PHP_INT_MIN];
+        yield [1, PHP_INT_MIN, -1];
+        yield [1, PHP_INT_MIN, 0];
+        yield [1, PHP_INT_MIN, 1];
+        yield [1, PHP_INT_MIN, PHP_INT_MAX];
+        yield [1, -1, PHP_INT_MIN];
+        yield [1, -1, -1];
+        yield [1, -1, 0];
+        yield [1, -1, 1];
+        yield [1, -1, PHP_INT_MAX];
+        yield [1, 0, PHP_INT_MIN];
+        yield [1, 0, -1];
+        yield [1, 0, 0];
+        yield [1, 0, 1];
+        yield [1, 0, PHP_INT_MAX];
+        yield [1, 1, PHP_INT_MIN];
+        yield [1, 1, -1];
+        yield [1, 1, 0];
+        yield [1, 1, 1];
+        yield [1, 1, PHP_INT_MAX];
+        yield [1, PHP_INT_MAX, PHP_INT_MIN];
+        yield [1, PHP_INT_MAX, -1];
+        yield [1, PHP_INT_MAX, 0];
+        yield [1, PHP_INT_MAX, 1];
+        yield [1, PHP_INT_MAX, PHP_INT_MAX];
+        yield [PHP_INT_MAX, PHP_INT_MIN, PHP_INT_MIN];
+        yield [PHP_INT_MAX, PHP_INT_MIN, -1];
+        yield [PHP_INT_MAX, PHP_INT_MIN, 0];
+        yield [PHP_INT_MAX, PHP_INT_MIN, 1];
+        yield [PHP_INT_MAX, PHP_INT_MIN, PHP_INT_MAX];
+        yield [PHP_INT_MAX, -1, PHP_INT_MIN];
+        yield [PHP_INT_MAX, -1, -1];
+        yield [PHP_INT_MAX, -1, 0];
+        yield [PHP_INT_MAX, -1, 1];
+        yield [PHP_INT_MAX, -1, PHP_INT_MAX];
+        yield [PHP_INT_MAX, 0, PHP_INT_MIN];
+        yield [PHP_INT_MAX, 0, -1];
+        yield [PHP_INT_MAX, 0, 0];
+        yield [PHP_INT_MAX, 0, 1];
+        yield [PHP_INT_MAX, 0, PHP_INT_MAX];
+        yield [PHP_INT_MAX, 1, PHP_INT_MIN];
+        yield [PHP_INT_MAX, 1, -1];
+        yield [PHP_INT_MAX, 1, 0];
+        yield [PHP_INT_MAX, 1, 1];
+        yield [PHP_INT_MAX, 1, PHP_INT_MAX];
+        yield [PHP_INT_MAX, PHP_INT_MAX, PHP_INT_MIN];
+        yield [PHP_INT_MAX, PHP_INT_MAX, -1];
+        yield [PHP_INT_MAX, PHP_INT_MAX, 0];
+        yield [PHP_INT_MAX, PHP_INT_MAX, 1];
+        yield [PHP_INT_MAX, PHP_INT_MAX, PHP_INT_MAX];
     }
 }

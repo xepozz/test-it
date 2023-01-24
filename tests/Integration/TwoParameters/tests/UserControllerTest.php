@@ -24,29 +24,27 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderSum(): array
+    public static function dataProviderSum(): iterable
     {
-        return [
-            [-9223372036854775807-1, PHP_INT_MIN, 0],
-            [-9223372036854775807, PHP_INT_MIN, 1],
-            [-1, PHP_INT_MIN, PHP_INT_MAX],
-            [-2, -1, -1],
-            [-1, -1, 0],
-            [0, -1, 1],
-            [9223372036854775806, -1, PHP_INT_MAX],
-            [-9223372036854775807-1, 0, PHP_INT_MIN],
-            [-1, 0, -1],
-            [0, 0, 0],
-            [1, 0, 1],
-            [9223372036854775807, 0, PHP_INT_MAX],
-            [-9223372036854775807, 1, PHP_INT_MIN],
-            [0, 1, -1],
-            [1, 1, 0],
-            [2, 1, 1],
-            [-1, PHP_INT_MAX, PHP_INT_MIN],
-            [9223372036854775806, PHP_INT_MAX, -1],
-            [9223372036854775807, PHP_INT_MAX, 0],
-        ];
+        yield [-9223372036854775807-1, PHP_INT_MIN, 0];
+        yield [-9223372036854775807, PHP_INT_MIN, 1];
+        yield [-1, PHP_INT_MIN, PHP_INT_MAX];
+        yield [-2, -1, -1];
+        yield [-1, -1, 0];
+        yield [0, -1, 1];
+        yield [9223372036854775806, -1, PHP_INT_MAX];
+        yield [-9223372036854775807-1, 0, PHP_INT_MIN];
+        yield [-1, 0, -1];
+        yield [0, 0, 0];
+        yield [1, 0, 1];
+        yield [9223372036854775807, 0, PHP_INT_MAX];
+        yield [-9223372036854775807, 1, PHP_INT_MIN];
+        yield [0, 1, -1];
+        yield [1, 1, 0];
+        yield [2, 1, 1];
+        yield [-1, PHP_INT_MAX, PHP_INT_MIN];
+        yield [9223372036854775806, PHP_INT_MAX, -1];
+        yield [9223372036854775807, PHP_INT_MAX, 0];
     }
 
 
@@ -66,15 +64,13 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function invalidDataProviderSum(): array
+    public static function invalidDataProviderSum(): iterable
     {
-        return [
-            [-9223372036854775808, -9223372036854775808],
-            [-9223372036854775808, -1],
-            [-1, -9223372036854775808],
-            [1, 9223372036854775807],
-            [9223372036854775807, 1],
-            [9223372036854775807, 9223372036854775807],
-        ];
+        yield [-9223372036854775808, -9223372036854775808];
+        yield [-9223372036854775808, -1];
+        yield [-1, -9223372036854775808];
+        yield [1, 9223372036854775807];
+        yield [9223372036854775807, 1];
+        yield [9223372036854775807, 9223372036854775807];
     }
 }

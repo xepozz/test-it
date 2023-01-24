@@ -24,29 +24,27 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderDiff(): array
+    public static function dataProviderDiff(): iterable
     {
-        return [
-            [-9223372036854775807-1, PHP_INT_MIN, 0],
-            [-9223372036854775807, PHP_INT_MIN, 1],
-            [-1, PHP_INT_MIN, PHP_INT_MAX],
-            [-2, -1, -1],
-            [-1, -1, 0],
-            [0, -1, 1],
-            [9223372036854775806, -1, PHP_INT_MAX],
-            [-9223372036854775807-1, 0, PHP_INT_MIN],
-            [-1, 0, -1],
-            [0, 0, 0],
-            [1, 0, 1],
-            [9223372036854775807, 0, PHP_INT_MAX],
-            [-9223372036854775807, 1, PHP_INT_MIN],
-            [0, 1, -1],
-            [1, 1, 0],
-            [2, 1, 1],
-            [-1, PHP_INT_MAX, PHP_INT_MIN],
-            [9223372036854775806, PHP_INT_MAX, -1],
-            [9223372036854775807, PHP_INT_MAX, 0],
-        ];
+        yield [-9223372036854775807-1, PHP_INT_MIN, 0];
+        yield [-9223372036854775807, PHP_INT_MIN, 1];
+        yield [-1, PHP_INT_MIN, PHP_INT_MAX];
+        yield [-2, -1, -1];
+        yield [-1, -1, 0];
+        yield [0, -1, 1];
+        yield [9223372036854775806, -1, PHP_INT_MAX];
+        yield [-9223372036854775807-1, 0, PHP_INT_MIN];
+        yield [-1, 0, -1];
+        yield [0, 0, 0];
+        yield [1, 0, 1];
+        yield [9223372036854775807, 0, PHP_INT_MAX];
+        yield [-9223372036854775807, 1, PHP_INT_MIN];
+        yield [0, 1, -1];
+        yield [1, 1, 0];
+        yield [2, 1, 1];
+        yield [-1, PHP_INT_MAX, PHP_INT_MIN];
+        yield [9223372036854775806, PHP_INT_MAX, -1];
+        yield [9223372036854775807, PHP_INT_MAX, 0];
     }
 
 
@@ -66,16 +64,14 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function invalidDataProviderDiff(): array
+    public static function invalidDataProviderDiff(): iterable
     {
-        return [
-            [-9223372036854775808, -9223372036854775808],
-            [-9223372036854775808, -1],
-            [-1, -9223372036854775808],
-            [1, 9223372036854775807],
-            [9223372036854775807, 1],
-            [9223372036854775807, 9223372036854775807],
-        ];
+        yield [-9223372036854775808, -9223372036854775808];
+        yield [-9223372036854775808, -1];
+        yield [-1, -9223372036854775808];
+        yield [1, 9223372036854775807];
+        yield [9223372036854775807, 1];
+        yield [9223372036854775807, 9223372036854775807];
     }
 
 
@@ -95,29 +91,27 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderSum(): array
+    public static function dataProviderSum(): iterable
     {
-        return [
-            [-9223372036854775807-1, PHP_INT_MIN, 0],
-            [-9223372036854775807, PHP_INT_MIN, 1],
-            [-1, PHP_INT_MIN, PHP_INT_MAX],
-            [-2, -1, -1],
-            [-1, -1, 0],
-            [0, -1, 1],
-            [9223372036854775806, -1, PHP_INT_MAX],
-            [-9223372036854775807-1, 0, PHP_INT_MIN],
-            [-1, 0, -1],
-            [0, 0, 0],
-            [1, 0, 1],
-            [9223372036854775807, 0, PHP_INT_MAX],
-            [-9223372036854775807, 1, PHP_INT_MIN],
-            [0, 1, -1],
-            [1, 1, 0],
-            [2, 1, 1],
-            [-1, PHP_INT_MAX, PHP_INT_MIN],
-            [9223372036854775806, PHP_INT_MAX, -1],
-            [9223372036854775807, PHP_INT_MAX, 0],
-        ];
+        yield [-9223372036854775807-1, PHP_INT_MIN, 0];
+        yield [-9223372036854775807, PHP_INT_MIN, 1];
+        yield [-1, PHP_INT_MIN, PHP_INT_MAX];
+        yield [-2, -1, -1];
+        yield [-1, -1, 0];
+        yield [0, -1, 1];
+        yield [9223372036854775806, -1, PHP_INT_MAX];
+        yield [-9223372036854775807-1, 0, PHP_INT_MIN];
+        yield [-1, 0, -1];
+        yield [0, 0, 0];
+        yield [1, 0, 1];
+        yield [9223372036854775807, 0, PHP_INT_MAX];
+        yield [-9223372036854775807, 1, PHP_INT_MIN];
+        yield [0, 1, -1];
+        yield [1, 1, 0];
+        yield [2, 1, 1];
+        yield [-1, PHP_INT_MAX, PHP_INT_MIN];
+        yield [9223372036854775806, PHP_INT_MAX, -1];
+        yield [9223372036854775807, PHP_INT_MAX, 0];
     }
 
 
@@ -137,16 +131,14 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function invalidDataProviderSum(): array
+    public static function invalidDataProviderSum(): iterable
     {
-        return [
-            [-9223372036854775808, -9223372036854775808],
-            [-9223372036854775808, -1],
-            [-1, -9223372036854775808],
-            [1, 9223372036854775807],
-            [9223372036854775807, 1],
-            [9223372036854775807, 9223372036854775807],
-        ];
+        yield [-9223372036854775808, -9223372036854775808];
+        yield [-9223372036854775808, -1];
+        yield [-1, -9223372036854775808];
+        yield [1, 9223372036854775807];
+        yield [9223372036854775807, 1];
+        yield [9223372036854775807, 9223372036854775807];
     }
 
 
@@ -166,29 +158,27 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderAvg(): array
+    public static function dataProviderAvg(): iterable
     {
-        return [
-            [-9223372036854775807-1, PHP_INT_MIN, 0],
-            [-9223372036854775807, PHP_INT_MIN, 1],
-            [-1, PHP_INT_MIN, PHP_INT_MAX],
-            [-2, -1, -1],
-            [-1, -1, 0],
-            [0, -1, 1],
-            [9223372036854775806, -1, PHP_INT_MAX],
-            [-9223372036854775807-1, 0, PHP_INT_MIN],
-            [-1, 0, -1],
-            [0, 0, 0],
-            [1, 0, 1],
-            [9223372036854775807, 0, PHP_INT_MAX],
-            [-9223372036854775807, 1, PHP_INT_MIN],
-            [0, 1, -1],
-            [1, 1, 0],
-            [2, 1, 1],
-            [-1, PHP_INT_MAX, PHP_INT_MIN],
-            [9223372036854775806, PHP_INT_MAX, -1],
-            [9223372036854775807, PHP_INT_MAX, 0],
-        ];
+        yield [-9223372036854775807-1, PHP_INT_MIN, 0];
+        yield [-9223372036854775807, PHP_INT_MIN, 1];
+        yield [-1, PHP_INT_MIN, PHP_INT_MAX];
+        yield [-2, -1, -1];
+        yield [-1, -1, 0];
+        yield [0, -1, 1];
+        yield [9223372036854775806, -1, PHP_INT_MAX];
+        yield [-9223372036854775807-1, 0, PHP_INT_MIN];
+        yield [-1, 0, -1];
+        yield [0, 0, 0];
+        yield [1, 0, 1];
+        yield [9223372036854775807, 0, PHP_INT_MAX];
+        yield [-9223372036854775807, 1, PHP_INT_MIN];
+        yield [0, 1, -1];
+        yield [1, 1, 0];
+        yield [2, 1, 1];
+        yield [-1, PHP_INT_MAX, PHP_INT_MIN];
+        yield [9223372036854775806, PHP_INT_MAX, -1];
+        yield [9223372036854775807, PHP_INT_MAX, 0];
     }
 
 
@@ -208,16 +198,14 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function invalidDataProviderAvg(): array
+    public static function invalidDataProviderAvg(): iterable
     {
-        return [
-            [-9223372036854775808, -9223372036854775808],
-            [-9223372036854775808, -1],
-            [-1, -9223372036854775808],
-            [1, 9223372036854775807],
-            [9223372036854775807, 1],
-            [9223372036854775807, 9223372036854775807],
-        ];
+        yield [-9223372036854775808, -9223372036854775808];
+        yield [-9223372036854775808, -1];
+        yield [-1, -9223372036854775808];
+        yield [1, 9223372036854775807];
+        yield [9223372036854775807, 1];
+        yield [9223372036854775807, 9223372036854775807];
     }
 
 
@@ -237,35 +225,33 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderEqual(): array
+    public static function dataProviderEqual(): iterable
     {
-        return [
-            [true, PHP_INT_MIN, PHP_INT_MIN],
-            [false, PHP_INT_MIN, -1],
-            [false, PHP_INT_MIN, 0],
-            [false, PHP_INT_MIN, 1],
-            [false, PHP_INT_MIN, PHP_INT_MAX],
-            [false, -1, PHP_INT_MIN],
-            [true, -1, -1],
-            [false, -1, 0],
-            [false, -1, 1],
-            [false, -1, PHP_INT_MAX],
-            [false, 0, PHP_INT_MIN],
-            [false, 0, -1],
-            [true, 0, 0],
-            [false, 0, 1],
-            [false, 0, PHP_INT_MAX],
-            [false, 1, PHP_INT_MIN],
-            [false, 1, -1],
-            [false, 1, 0],
-            [true, 1, 1],
-            [false, 1, PHP_INT_MAX],
-            [false, PHP_INT_MAX, PHP_INT_MIN],
-            [false, PHP_INT_MAX, -1],
-            [false, PHP_INT_MAX, 0],
-            [false, PHP_INT_MAX, 1],
-            [true, PHP_INT_MAX, PHP_INT_MAX],
-        ];
+        yield [true, PHP_INT_MIN, PHP_INT_MIN];
+        yield [false, PHP_INT_MIN, -1];
+        yield [false, PHP_INT_MIN, 0];
+        yield [false, PHP_INT_MIN, 1];
+        yield [false, PHP_INT_MIN, PHP_INT_MAX];
+        yield [false, -1, PHP_INT_MIN];
+        yield [true, -1, -1];
+        yield [false, -1, 0];
+        yield [false, -1, 1];
+        yield [false, -1, PHP_INT_MAX];
+        yield [false, 0, PHP_INT_MIN];
+        yield [false, 0, -1];
+        yield [true, 0, 0];
+        yield [false, 0, 1];
+        yield [false, 0, PHP_INT_MAX];
+        yield [false, 1, PHP_INT_MIN];
+        yield [false, 1, -1];
+        yield [false, 1, 0];
+        yield [true, 1, 1];
+        yield [false, 1, PHP_INT_MAX];
+        yield [false, PHP_INT_MAX, PHP_INT_MIN];
+        yield [false, PHP_INT_MAX, -1];
+        yield [false, PHP_INT_MAX, 0];
+        yield [false, PHP_INT_MAX, 1];
+        yield [true, PHP_INT_MAX, PHP_INT_MAX];
     }
 
 
@@ -285,35 +271,33 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderFirstGreater(): array
+    public static function dataProviderFirstGreater(): iterable
     {
-        return [
-            [false, PHP_INT_MIN, PHP_INT_MIN],
-            [false, PHP_INT_MIN, -1],
-            [false, PHP_INT_MIN, 0],
-            [false, PHP_INT_MIN, 1],
-            [false, PHP_INT_MIN, PHP_INT_MAX],
-            [true, -1, PHP_INT_MIN],
-            [false, -1, -1],
-            [false, -1, 0],
-            [false, -1, 1],
-            [false, -1, PHP_INT_MAX],
-            [true, 0, PHP_INT_MIN],
-            [true, 0, -1],
-            [false, 0, 0],
-            [false, 0, 1],
-            [false, 0, PHP_INT_MAX],
-            [true, 1, PHP_INT_MIN],
-            [true, 1, -1],
-            [true, 1, 0],
-            [false, 1, 1],
-            [false, 1, PHP_INT_MAX],
-            [true, PHP_INT_MAX, PHP_INT_MIN],
-            [true, PHP_INT_MAX, -1],
-            [true, PHP_INT_MAX, 0],
-            [true, PHP_INT_MAX, 1],
-            [false, PHP_INT_MAX, PHP_INT_MAX],
-        ];
+        yield [false, PHP_INT_MIN, PHP_INT_MIN];
+        yield [false, PHP_INT_MIN, -1];
+        yield [false, PHP_INT_MIN, 0];
+        yield [false, PHP_INT_MIN, 1];
+        yield [false, PHP_INT_MIN, PHP_INT_MAX];
+        yield [true, -1, PHP_INT_MIN];
+        yield [false, -1, -1];
+        yield [false, -1, 0];
+        yield [false, -1, 1];
+        yield [false, -1, PHP_INT_MAX];
+        yield [true, 0, PHP_INT_MIN];
+        yield [true, 0, -1];
+        yield [false, 0, 0];
+        yield [false, 0, 1];
+        yield [false, 0, PHP_INT_MAX];
+        yield [true, 1, PHP_INT_MIN];
+        yield [true, 1, -1];
+        yield [true, 1, 0];
+        yield [false, 1, 1];
+        yield [false, 1, PHP_INT_MAX];
+        yield [true, PHP_INT_MAX, PHP_INT_MIN];
+        yield [true, PHP_INT_MAX, -1];
+        yield [true, PHP_INT_MAX, 0];
+        yield [true, PHP_INT_MAX, 1];
+        yield [false, PHP_INT_MAX, PHP_INT_MAX];
     }
 
 
@@ -333,34 +317,32 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderSecondGreater(): array
+    public static function dataProviderSecondGreater(): iterable
     {
-        return [
-            [false, PHP_INT_MIN, PHP_INT_MIN],
-            [true, PHP_INT_MIN, -1],
-            [true, PHP_INT_MIN, 0],
-            [true, PHP_INT_MIN, 1],
-            [true, PHP_INT_MIN, PHP_INT_MAX],
-            [false, -1, PHP_INT_MIN],
-            [false, -1, -1],
-            [true, -1, 0],
-            [true, -1, 1],
-            [true, -1, PHP_INT_MAX],
-            [false, 0, PHP_INT_MIN],
-            [false, 0, -1],
-            [false, 0, 0],
-            [true, 0, 1],
-            [true, 0, PHP_INT_MAX],
-            [false, 1, PHP_INT_MIN],
-            [false, 1, -1],
-            [false, 1, 0],
-            [false, 1, 1],
-            [true, 1, PHP_INT_MAX],
-            [false, PHP_INT_MAX, PHP_INT_MIN],
-            [false, PHP_INT_MAX, -1],
-            [false, PHP_INT_MAX, 0],
-            [false, PHP_INT_MAX, 1],
-            [false, PHP_INT_MAX, PHP_INT_MAX],
-        ];
+        yield [false, PHP_INT_MIN, PHP_INT_MIN];
+        yield [true, PHP_INT_MIN, -1];
+        yield [true, PHP_INT_MIN, 0];
+        yield [true, PHP_INT_MIN, 1];
+        yield [true, PHP_INT_MIN, PHP_INT_MAX];
+        yield [false, -1, PHP_INT_MIN];
+        yield [false, -1, -1];
+        yield [true, -1, 0];
+        yield [true, -1, 1];
+        yield [true, -1, PHP_INT_MAX];
+        yield [false, 0, PHP_INT_MIN];
+        yield [false, 0, -1];
+        yield [false, 0, 0];
+        yield [true, 0, 1];
+        yield [true, 0, PHP_INT_MAX];
+        yield [false, 1, PHP_INT_MIN];
+        yield [false, 1, -1];
+        yield [false, 1, 0];
+        yield [false, 1, 1];
+        yield [true, 1, PHP_INT_MAX];
+        yield [false, PHP_INT_MAX, PHP_INT_MIN];
+        yield [false, PHP_INT_MAX, -1];
+        yield [false, PHP_INT_MAX, 0];
+        yield [false, PHP_INT_MAX, 1];
+        yield [false, PHP_INT_MAX, PHP_INT_MAX];
     }
 }

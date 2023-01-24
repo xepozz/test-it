@@ -24,14 +24,12 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderGenerate(): array
+    public static function dataProviderGenerate(): iterable
     {
-        return [
-            [[], []],
-            [[[], []], [[], []]],
-            [[['value']], [['value']]],
-            [[[0]], [[0]]],
-        ];
+        yield [[], []];
+        yield [[[], []], [[], []]];
+        yield [[['value']], [['value']]];
+        yield [[[0]], [[0]]];
     }
 
 
@@ -51,9 +49,7 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderArray(): array
+    public static function dataProviderArray(): iterable
     {
-        return [
-        ];
     }
 }

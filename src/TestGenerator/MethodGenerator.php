@@ -162,7 +162,6 @@ PHP;
             $positiveDataProvider->addBody('return [];');
             return [];
         }
-        $positiveDataProvider->addBody('return [');
 
         foreach ($this->possibleReturnTypes as $possibleType) {
             $valueGenerator = $this->valueGenerator($possibleType);
@@ -204,10 +203,9 @@ PHP;
                 }
                 $valuesToPrint = array_map($this->dumper->dump(...), $case);
                 $case = implode(', ', $valuesToPrint);
-                $positiveDataProvider->addBody("\t[{$case}],");
+                $positiveDataProvider->addBody("yield [{$case}];");
             }
         }
-        $positiveDataProvider->addBody('];');
         $testMethod->addBody($this->methodBodyBuilder->build());
 
         return [$testMethod, $positiveDataProvider];
@@ -255,7 +253,6 @@ PHP;
         if (count($this->possibleReturnTypes) === 0) {
             return [];
         }
-        $invalidDataProvider->addBody('return [');
 
         $hasInvalidCases = false;
         foreach ($this->possibleReturnTypes as $possibleType) {
@@ -287,12 +284,11 @@ PHP;
                     $this->evaluateMethod($object, $method, $valuesToPrint);
                 } catch (\Throwable $e) {
                     $case = implode(', ', $valuesToPrint);
-                    $invalidDataProvider->addBody("\t[{$case}],");
+                    $invalidDataProvider->addBody("yield [{$case}];");
                     $hasInvalidCases = true;
                 }
             }
         }
-        $invalidDataProvider->addBody('];');
         $testMethod->addBody($this->methodBodyBuilder->build());
 
         if ($hasInvalidCases) {
@@ -339,7 +335,7 @@ PHP;
 
         $dataProvider = new Method($dataProviderMethodName);
         $dataProvider->setPublic();
-        $dataProvider->setReturnType('array');
+        $dataProvider->setReturnType('iterable');
         $dataProvider->setStatic();
 
         return $dataProvider;

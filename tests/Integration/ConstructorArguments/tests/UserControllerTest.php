@@ -24,9 +24,7 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderGet(): array
+    public static function dataProviderGet(): iterable
     {
-        return [
-        ];
     }
 }

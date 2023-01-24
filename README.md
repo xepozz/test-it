@@ -71,12 +71,10 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     }
 
 
-    public static function dataProviderInverse(): array
+    public static function dataProviderInverse(): iterable
     {
-        return [
-            [false, true],
-            [true, false],
-        ];
+        yield [false, true];
+        yield [true, false];
     }
 }
 ```
