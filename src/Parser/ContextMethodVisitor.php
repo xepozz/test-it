@@ -88,8 +88,17 @@ class ContextMethodVisitor extends NodeVisitorAbstract
             if ($this->isMethodIgnored($node)) {
                 return null;
             }
-            $generator = new MethodGenerator($this->context);
-            array_push($this->generatedMethods, ...$generator->generate($node));
+            $generator = new MethodGenerator();
+            foreach ($generator->generate($this->context) as $testMethod) {
+                $name = $testMethod->getName();
+//                if (isset($this->generatedMethods[$name])) {
+//                    throw new \Exception(sprintf(
+//                        'Generated method with name "%s" was already generated.',
+//                        $name,
+//                    ));
+//                }
+                $this->generatedMethods[$name] = $testMethod;
+            }
             return null;
         }
         return null;

@@ -2,22 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Xepozz\TestIt\TestGenerator;
+namespace Xepozz\TestIt\TestMethodGenerator;
 
+use Nette\PhpGenerator\Dumper;
 use Nette\PhpGenerator\Method;
 use Xepozz\TestIt\Helper\TestMethodFactory;
 use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\MethodEvaluator;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\PhpEntitiesConverter;
+use Xepozz\TestIt\TestGenerator\DataProviderGenerator;
 use Xepozz\TestIt\TypeNormalizer;
 use Xepozz\TestIt\TypeSerializer;
 
-final class NegativeMethodGenerator
+final class PositiveMethodGenerator implements TestMethodGeneratorInterface
 {
     private TypeSerializer $typeSerializer;
     private TypeNormalizer $typeNormalizer;
     private MethodEvaluator $methodEvaluator;
+    private Dumper $dumper;
     private DataProviderGenerator $dataProviderGenerator;
     private TestMethodFactory $testMethodFactory;
     private PhpEntitiesConverter $phpEntitiesConverter;
@@ -27,6 +30,7 @@ final class NegativeMethodGenerator
         $this->typeSerializer = new TypeSerializer();
         $this->typeNormalizer = new TypeNormalizer();
         $this->methodEvaluator = new MethodEvaluator();
+        $this->dumper = new Dumper();
         $this->dataProviderGenerator = new DataProviderGenerator();
         $this->testMethodFactory = new TestMethodFactory();
         $this->phpEntitiesConverter = new PhpEntitiesConverter();
@@ -43,14 +47,7 @@ final class NegativeMethodGenerator
         $method = $context->method;
         $possibleReturnTypes = $this->typeNormalizer->denormalize($method->getReturnType());
 
-        if (!$context->config->isCaseEvaluationEnabled()) {
-            /**
-             * No need to generate negative test because we can check if the result is not successful
-             */
-            return [];
-        }
-
-        $testMethodName = 'testInvalid' . ucfirst($method->name->name);
+        $testMethodName = 'test' . ucfirst($method->name->name);
         $testMethod = $this->testMethodFactory->create($testMethodName, $method);
         $testMethod
             ->addParameter('expectedValue')
@@ -72,26 +69,35 @@ final class NegativeMethodGenerator
         $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}($arguments);");
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
 
-        $dataProviderName = 'invalidDataProvider' . ucfirst($method->name->name);
-        $invalidDataProvider = $this->dataProviderGenerator->generate($dataProviderName, $testMethod);
+        $dataProviderName = 'dataProvider' . ucfirst($method->name->name);
+        $positiveDataProvider = $this->dataProviderGenerator->generate($dataProviderName, $testMethod);
 
-        $hasInvalidCases = false;
-
+        $hasCase = false;
         foreach ($cases as $case) {
             $valuesToPrint = $this->phpEntitiesConverter->convert($case);
             try {
-                $this->methodEvaluator->evaluate($context, $valuesToPrint);
-            } catch (\Throwable $e) {
-                $case = implode(', ', $valuesToPrint);
-                $invalidDataProvider->addBody("yield [{$case}];");
-                $hasInvalidCases = true;
+                if ($context->config->isCaseEvaluationEnabled()) {
+                    $result = $this->methodEvaluator->evaluate($context, $valuesToPrint);
+                    $case = [$result, ...$case];
+                }
+            } catch (\Throwable) {
+                continue;
             }
+            $hasCase = true;
+            $valuesToPrint = array_map($this->dumper->dump(...), $case);
+            $case = implode(', ', $valuesToPrint);
+            $positiveDataProvider->addBody("yield [{$case}];");
         }
         $testMethod->addBody($methodBodyBuilder->build());
 
-        if (!$hasInvalidCases) {
+        if (!$hasCase) {
             return [];
         }
-        return [$testMethod, $invalidDataProvider];
+        return [$testMethod, $positiveDataProvider];
+    }
+
+    public function supports(Context $context, array $cases): bool
+    {
+        return true;
     }
 }
