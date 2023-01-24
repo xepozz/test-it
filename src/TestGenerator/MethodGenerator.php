@@ -88,7 +88,7 @@ PHP;
         }
         if ($returnType instanceof Identifier) {
             if ($returnType->name === 'true' || $returnType->name === 'false') {
-                $this->possibleReturnTypes[] = $returnType->name;
+                $this->possibleReturnTypes[] = $returnType->toString();
             } elseif ($returnType->name === 'bool') {
                 $this->possibleTestsNumbers *= 2;
             } elseif ($returnType->name === 'string' || $returnType->name === 'int') {
@@ -96,22 +96,24 @@ PHP;
             } elseif ($returnType->name === 'array') {
                 $this->possibleTestsNumbers *= 10;
             }
-            $this->possibleReturnTypes[] = $returnType->name;
+            $this->possibleReturnTypes[] = $returnType->toString();
+            return;
+        }
+        if ($returnType instanceof NullableType) {
+            $this->possibleTestsNumbers++;
+            $this->possibleReturnTypes[] = 'null';
+            $this->processType($returnType->type);
+            return;
+        }
+        if ($returnType instanceof FullyQualified) {
+            $this->possibleTestsNumbers *= 10;
+            $this->possibleReturnTypes[] = $returnType->toString();
             return;
         }
         if ($returnType instanceof UnionType || $returnType instanceof IntersectionType) {
             foreach ($returnType->types as $type) {
                 $this->processType($type);
             }
-        }
-        if ($returnType instanceof NullableType) {
-            $this->possibleTestsNumbers++;
-            $this->possibleReturnTypes[] = 'null';
-            $this->processType($returnType->type);
-        }
-        if ($returnType instanceof FullyQualified) {
-            $this->possibleTestsNumbers *= 10;
-            $this->possibleReturnTypes[] = $returnType->toString();
         }
     }
 

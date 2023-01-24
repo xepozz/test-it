@@ -15,6 +15,9 @@ final class TypeSerializer
         if (is_string($type)) {
             return $type;
         }
-        return $type?->toString() ?? 'mixed';
+        if ($type === null) {
+            return 'mixed';
+        }
+        return $type->toString();
     }
 }
