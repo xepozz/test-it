@@ -11,6 +11,7 @@ use Xepozz\TestIt\ValueGenerator\MixedValueGenerator;
 use Xepozz\TestIt\ValueGenerator\NullValueGenerator;
 use Xepozz\TestIt\ValueGenerator\StringValueGenerator;
 use Xepozz\TestIt\ValueGenerator\ValueGeneratorInterface;
+use Xepozz\TestIt\ValueGenerator\VoidValueGenerator;
 
 final class ValueGeneratorRepository
 {
@@ -23,6 +24,7 @@ final class ValueGeneratorRepository
             'string' => new StringValueGenerator(),
             'int' => new IntegerValueGenerator(),
             'mixed' => new MixedValueGenerator(),
+            'void' => new VoidValueGenerator(),
             default => null,
         };
     }
