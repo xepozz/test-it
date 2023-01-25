@@ -6,7 +6,7 @@ namespace Xepozz\TestIt;
 
 use Xepozz\TestIt\Parser\Context;
 
-class MethodEvaluator
+final class MethodEvaluator
 {
     public function evaluate(Context $context, array $arguments)
     {

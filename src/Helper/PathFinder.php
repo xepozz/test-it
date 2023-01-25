@@ -6,7 +6,7 @@ namespace Xepozz\TestIt\Helper;
 
 use Composer\Autoload\ClassLoader;
 
-class PathFinder
+final class PathFinder
 {
     private const NAMESPACE_SEPARATOR = '\\';
 

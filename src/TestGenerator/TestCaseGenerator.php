@@ -8,7 +8,7 @@ use Xepozz\TestIt\MatrixIntersection;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
 use Xepozz\TestIt\ValueGenerator\ValueGeneratorInterface;
-use Xepozz\TestIt\ValueGeneratorRepository;
+use Xepozz\TestIt\ValueGenerator\ValueGeneratorRepository;
 
 final class TestCaseGenerator
 {

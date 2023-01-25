@@ -9,7 +9,7 @@ use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
 
-class NoAssertionGenerator implements TestMethodGeneratorInterface
+final class NoAssertionGenerator implements TestMethodGeneratorInterface
 {
     private TypeNormalizer $typeNormalizer;
     private TestMethodFactory $testMethodFactory;

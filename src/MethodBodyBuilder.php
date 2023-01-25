@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Xepozz\TestIt;
 
-class MethodBodyBuilder
+final class MethodBodyBuilder
 {
     private array $arranges = [];
     private array $acts = [];

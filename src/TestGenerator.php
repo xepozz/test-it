@@ -28,13 +28,12 @@ final readonly class TestGenerator
 
         $finder = Finder::fromConfig($this->config);
 
-        $traverser = new NodeTraverser;
-        $nameResolver = new NameResolver;
-        $traverser->addVisitor($nameResolver);
-
         $context = new Context($this->config);
-
         $visitor = new ContextMethodVisitor($context);
+
+        $traverser = new NodeTraverser();
+        $nameResolver = new NameResolver();
+        $traverser->addVisitor($nameResolver);
         $traverser->addVisitor($visitor);
 
         foreach ($finder as $file) {
@@ -43,7 +42,6 @@ final readonly class TestGenerator
             $nodes = (array) $this->parser->parse(file_get_contents($fileSourcePath));
 
             $traverser->traverse($nodes);
-//            $traverser->removeVisitor($visitor);
 
             $files = $visitor->dump();
             foreach ($files as $phpFile) {
