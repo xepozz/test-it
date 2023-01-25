@@ -103,12 +103,12 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
 
     public static function invalidDataProviderSum(): iterable
     {
-        yield [-9223372036854775808, -9223372036854775808];
-        yield [-9223372036854775808, -1];
-        yield [-1, -9223372036854775808];
-        yield [1, 9223372036854775807];
-        yield [9223372036854775807, 1];
-        yield [9223372036854775807, 9223372036854775807];
+        yield [PHP_INT_MIN, PHP_INT_MIN];
+        yield [PHP_INT_MIN, -1];
+        yield [-1, PHP_INT_MIN];
+        yield [1, PHP_INT_MAX];
+        yield [PHP_INT_MAX, 1];
+        yield [PHP_INT_MAX, PHP_INT_MAX];
     }
 }
 ```

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Xepozz\TestIt\TestMethodGenerator;
 
+use Nette\PhpGenerator\Dumper;
 use Nette\PhpGenerator\Method;
 use Xepozz\TestIt\Helper\TestMethodFactory;
 use Xepozz\TestIt\MethodBodyBuilder;
@@ -16,6 +17,7 @@ use Xepozz\TestIt\TypeSerializer;
 
 final readonly class NegativeMethodGenerator implements TestMethodGeneratorInterface
 {
+
     public function __construct(
         private TypeSerializer $typeSerializer,
         private TypeNormalizer $typeNormalizer,
@@ -23,6 +25,7 @@ final readonly class NegativeMethodGenerator implements TestMethodGeneratorInter
         private DataProviderGenerator $dataProviderGenerator,
         private TestMethodFactory $testMethodFactory,
         private PhpEntitiesConverter $phpEntitiesConverter,
+        private Dumper $dumper,
     ) {
     }
 
@@ -76,6 +79,7 @@ final readonly class NegativeMethodGenerator implements TestMethodGeneratorInter
             try {
                 $this->methodEvaluator->evaluate($context, $valuesToPrint);
             } catch (\Throwable $e) {
+                $valuesToPrint = array_map($this->dumper->dump(...), $case);
                 $case = implode(', ', $valuesToPrint);
                 $invalidDataProvider->addBody("yield [{$case}];");
                 $hasInvalidCases = true;
