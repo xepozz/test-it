@@ -13,23 +13,8 @@ final class TestMethodFactory
     {
         $testMethod = new Method($name);
         $testMethod->setReturnType('void');
+        $testMethod->setPublic();
 
-        if ($method->isFinal()) {
-            $testMethod->setFinal();
-        }
-        if ($method->isAbstract()) {
-            $testMethod->setAbstract();
-        }
-        if ($method->isStatic()) {
-            $testMethod->setStatic();
-        }
-        if ($method->isProtected()) {
-            $testMethod->setProtected();
-        } elseif ($method->isPrivate()) {
-            $testMethod->setPrivate();
-        } else {
-            $testMethod->setPublic();
-        }
         return $testMethod;
     }
 }
