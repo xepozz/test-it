@@ -10,17 +10,13 @@ use Xepozz\TestIt\TypeNormalizer;
 use Xepozz\TestIt\ValueGenerator\ValueGeneratorInterface;
 use Xepozz\TestIt\ValueGenerator\ValueGeneratorRepository;
 
-final class TestCaseGenerator
+final readonly class TestCaseGenerator
 {
-    private TypeNormalizer $typeNormalizer;
-    private ValueGeneratorRepository $valueGeneratorRepository;
-    private MatrixIntersection $intersection;
-
-    public function __construct()
-    {
-        $this->valueGeneratorRepository = new ValueGeneratorRepository();
-        $this->typeNormalizer = new TypeNormalizer();
-        $this->intersection = new MatrixIntersection();
+    public function __construct(
+        private TypeNormalizer $typeNormalizer,
+        private ValueGeneratorRepository $valueGeneratorRepository,
+        private MatrixIntersection $intersection,
+    ) {
     }
 
     /**

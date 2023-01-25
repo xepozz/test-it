@@ -14,23 +14,16 @@ use Xepozz\TestIt\TestGenerator\DataProviderGenerator;
 use Xepozz\TestIt\TypeNormalizer;
 use Xepozz\TestIt\TypeSerializer;
 
-final class NegativeMethodGenerator implements TestMethodGeneratorInterface
+final readonly class NegativeMethodGenerator implements TestMethodGeneratorInterface
 {
-    private TypeSerializer $typeSerializer;
-    private TypeNormalizer $typeNormalizer;
-    private MethodEvaluator $methodEvaluator;
-    private DataProviderGenerator $dataProviderGenerator;
-    private TestMethodFactory $testMethodFactory;
-    private PhpEntitiesConverter $phpEntitiesConverter;
-
-    public function __construct()
-    {
-        $this->typeSerializer = new TypeSerializer();
-        $this->typeNormalizer = new TypeNormalizer();
-        $this->methodEvaluator = new MethodEvaluator();
-        $this->dataProviderGenerator = new DataProviderGenerator();
-        $this->testMethodFactory = new TestMethodFactory();
-        $this->phpEntitiesConverter = new PhpEntitiesConverter();
+    public function __construct(
+        private TypeSerializer $typeSerializer,
+        private TypeNormalizer $typeNormalizer,
+        private MethodEvaluator $methodEvaluator,
+        private DataProviderGenerator $dataProviderGenerator,
+        private TestMethodFactory $testMethodFactory,
+        private PhpEntitiesConverter $phpEntitiesConverter,
+    ) {
     }
 
     /**

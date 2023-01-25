@@ -16,6 +16,10 @@ final class MethodEvaluator
         $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
         $object = $reflectionClass->newInstanceWithoutConstructor();
 
-        return $object->{$method->name->name}(...$arguments);
+        try {
+            return $object->{$method->name->name}(...$arguments);
+        } catch (\Throwable) {
+            throw new \RuntimeException('An error occurred while trying to evaluate method');
+        }
     }
 }

@@ -9,15 +9,12 @@ use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
 
-final class NoAssertionGenerator implements TestMethodGeneratorInterface
+final readonly class NoAssertionGenerator implements TestMethodGeneratorInterface
 {
-    private TypeNormalizer $typeNormalizer;
-    private TestMethodFactory $testMethodFactory;
-
-    public function __construct()
-    {
-        $this->typeNormalizer = new TypeNormalizer();
-        $this->testMethodFactory = new TestMethodFactory();
+    public function __construct(
+        private TypeNormalizer $typeNormalizer,
+        private TestMethodFactory $testMethodFactory,
+    ) {
     }
 
     public function generate(Context $context, array $cases): iterable

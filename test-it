@@ -9,10 +9,13 @@ if (isset($GLOBALS['_composer_autoload_path'])) {
 use Composer\InstalledVersions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\SingleCommandApplication;
 use Xepozz\TestIt\Config;
 use Xepozz\TestIt\TestGenerator;
+use Yiisoft\Di\Container;
+use Yiisoft\Di\ContainerConfig;
 
 (new SingleCommandApplication())
     ->setName('Test it!')
@@ -34,9 +37,17 @@ use Xepozz\TestIt\TestGenerator;
                 ->setTargetDirectory($targetDirectory);
         }
 
-        $visitor = new TestGenerator($config);
+        $logger = new ConsoleLogger($output);
 
-        $visitor->process();
+        $definitions = require_once __DIR__ . '/container.php';
+        $containerConfig = ContainerConfig::create()
+            ->withDefinitions($definitions);
+        $container = new Container($containerConfig);
+
+        $generator = $container->get(TestGenerator::class);
+        $generator->setLogger($logger);
+
+        $generator->process($config);
         $output->writeln('All done.');
     })
     ->run();

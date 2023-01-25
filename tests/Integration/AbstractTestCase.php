@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 use Xepozz\TestIt\Config;
 use Xepozz\TestIt\TestGenerator;
 use Xepozz\TestIt\Tests\Support\Finder;
+use Yiisoft\Di\Container;
+use Yiisoft\Di\ContainerConfig;
 
 abstract class AbstractTestCase extends TestCase
 {
@@ -27,10 +29,16 @@ abstract class AbstractTestCase extends TestCase
         }
 
         $config = $this->getConfig($sourceDirectory, $targetDirectory);
-        $nodeVisitor = new TestGenerator($config);
-        $compareFiles = Finder::getFiles($compareDirectory);
 
-        $nodeVisitor->process();
+        $definitions = require dirname(__DIR__, 2) . '/container.php';
+        $containerConfig = ContainerConfig::create()
+            ->withDefinitions($definitions);
+        $container = new Container($containerConfig);
+
+        $testGenerator = $container->get(TestGenerator::class);
+        $testGenerator->process($config);
+
+        $compareFiles = Finder::getFiles($compareDirectory);
         $resultFiles = Finder::getFiles($targetDirectory);
 
         $this->assertEquals(

@@ -11,13 +11,19 @@ use Nette\PhpGenerator\PhpNamespace;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
+use Xepozz\TestIt\ContextProvider;
 use Xepozz\TestIt\TestGenerator\ClassGenerator;
 use Xepozz\TestIt\TestGenerator\FileGenerator;
 use Xepozz\TestIt\TestGenerator\MethodGenerator;
 use Xepozz\TestIt\TestGenerator\NamespaceGenerator;
 
-final class ContextMethodVisitor extends NodeVisitorAbstract
+final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var Method[]
      */
@@ -30,18 +36,17 @@ final class ContextMethodVisitor extends NodeVisitorAbstract
      * @var PhpNamespace[]
      */
     public array $generatedNamespaces = [];
-    private FileGenerator $fileGenerator;
-    private NamespaceGenerator $namespaceGenerator;
-    private ClassGenerator $classGenerator;
-    private MethodGenerator $methodGenerator;
+    private Context $context;
 
     public function __construct(
-        private readonly Context $context,
+        LoggerInterface $logger,
+        private readonly ContextProvider $contextProvider,
+        private readonly FileGenerator $fileGenerator,
+        private readonly NamespaceGenerator $namespaceGenerator,
+        private readonly ClassGenerator $classGenerator,
+        private readonly MethodGenerator $methodGenerator,
     ) {
-        $this->fileGenerator = new FileGenerator();
-        $this->namespaceGenerator = new NamespaceGenerator();
-        $this->classGenerator = new ClassGenerator();
-        $this->methodGenerator = new MethodGenerator();
+        $this->logger = $logger;
     }
 
     public function beforeTraverse(array $nodes)
@@ -53,22 +58,24 @@ final class ContextMethodVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): ?int
     {
+        $context = $this->contextProvider->getContext();
+
         if ($node instanceof Node\Stmt\Namespace_) {
-            $this->context->setNamespace($node);
+            $context->setNamespace($node);
             return null;
         }
         if ($node instanceof Node\Stmt\Class_) {
             if ($this->isClassExcluded($node)) {
                 return NodeTraverser::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
             }
-            $this->context->setClass($node);
+            $context->setClass($node);
             return null;
         }
         if ($node instanceof Node\Stmt\ClassMethod) {
             if ($this->isMethodIgnored($node)) {
                 return NodeTraverser::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
             }
-            $this->context->setClassMethod($node);
+            $context->setClassMethod($node);
             return NodeTraverser::DONT_TRAVERSE_CHILDREN;
         }
         return null;
@@ -76,8 +83,10 @@ final class ContextMethodVisitor extends NodeVisitorAbstract
 
     public function leaveNode(Node $node): null
     {
+        $context = $this->contextProvider->getContext();
+
         if ($node instanceof Node\Stmt\Namespace_) {
-            $generated = $this->namespaceGenerator->generate($this->context, $this->generatedClasses);
+            $generated = $this->namespaceGenerator->generate($context, $this->generatedClasses);
             if ($generated !== null) {
                 $this->generatedNamespaces[] = $generated;
             }
@@ -87,7 +96,7 @@ final class ContextMethodVisitor extends NodeVisitorAbstract
             if ($this->isClassExcluded($node)) {
                 return null;
             }
-            $generated = $this->classGenerator->generate($this->context, $this->generatedMethods);
+            $generated = $this->classGenerator->generate($context, $this->generatedMethods);
             if ($generated !== null) {
                 $this->generatedClasses[] = $generated;
             }
@@ -97,7 +106,7 @@ final class ContextMethodVisitor extends NodeVisitorAbstract
             if ($this->isMethodIgnored($node)) {
                 return null;
             }
-            $generated = $this->methodGenerator->generate($this->context);
+            $generated = $this->methodGenerator->generate($context);
             foreach ($generated as $testMethod) {
                 $name = $testMethod->getName();
                 if (isset($this->generatedMethods[$name])) {
@@ -129,7 +138,9 @@ final class ContextMethodVisitor extends NodeVisitorAbstract
 
     private function isClassExcluded(Node\Stmt\Class_ $node): bool
     {
-        return in_array($node->namespacedName->toString(), $this->context->config->getExcludedClasses());
+        $context = $this->contextProvider->getContext();
+
+        return in_array($node->namespacedName->toString(), $context->config->getExcludedClasses());
     }
 
     private function isMethodIgnored(Node\Stmt\ClassMethod $node): bool
