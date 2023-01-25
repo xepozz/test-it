@@ -51,26 +51,24 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider invalidDataProviderSum
      */
-    public function testInvalidSum(int $expectedValue, int $aValue, int $bValue): void
+    public function testInvalidSum(string $expectedExceptionClass, int $aValue, int $bValue): void
     {
         // arrange
         $userController = new UserController();
 
         // act
-        $actualValue = $userController->sum($aValue, $bValue);
-
-        // assert
-        $this->assertEquals($expectedValue, $actualValue);
+        $this->expectException($expectedExceptionClass);
+        $userController->sum($aValue, $bValue);
     }
 
 
     public static function invalidDataProviderSum(): iterable
     {
-        yield [PHP_INT_MIN, PHP_INT_MIN];
-        yield [PHP_INT_MIN, -1];
-        yield [-1, PHP_INT_MIN];
-        yield [1, PHP_INT_MAX];
-        yield [PHP_INT_MAX, 1];
-        yield [PHP_INT_MAX, PHP_INT_MAX];
+        yield [\RuntimeException::class, PHP_INT_MIN, PHP_INT_MIN];
+        yield [\RuntimeException::class, PHP_INT_MIN, -1];
+        yield [\RuntimeException::class, -1, PHP_INT_MIN];
+        yield [\RuntimeException::class, 1, PHP_INT_MAX];
+        yield [\RuntimeException::class, PHP_INT_MAX, 1];
+        yield [\RuntimeException::class, PHP_INT_MAX, PHP_INT_MAX];
     }
 }

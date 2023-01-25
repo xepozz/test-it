@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Xepozz\TestIt\TestMethodGenerator;
 
 use Nette\PhpGenerator\Dumper;
+use Nette\PhpGenerator\Literal;
 use Nette\PhpGenerator\Method;
 use Xepozz\TestIt\Helper\TestMethodFactory;
 use Xepozz\TestIt\MethodBodyBuilder;
@@ -38,7 +39,6 @@ final readonly class NegativeMethodGenerator implements TestMethodGeneratorInter
     {
         $class = $context->class;
         $method = $context->method;
-        $possibleReturnTypes = $this->typeNormalizer->denormalize($method->getReturnType());
 
         if (!$context->config->isCaseEvaluationEnabled()) {
             /**
@@ -50,8 +50,8 @@ final readonly class NegativeMethodGenerator implements TestMethodGeneratorInter
         $testMethodName = 'testInvalid' . ucfirst($method->name->name);
         $testMethod = $this->testMethodFactory->create($testMethodName, $method);
         $testMethod
-            ->addParameter('expectedValue')
-            ->setType($this->typeSerializer->serialize($possibleReturnTypes));
+            ->addParameter('expectedExceptionClass')
+            ->setType('string');
 
         $arguments = [];
         foreach ($method->getParams() as $parameter) {
@@ -66,8 +66,8 @@ final readonly class NegativeMethodGenerator implements TestMethodGeneratorInter
 
         $methodBodyBuilder = MethodBodyBuilder::create();
         $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
-        $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}($arguments);");
-        $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
+        $methodBodyBuilder->addAct("\$this->expectException(\$expectedExceptionClass);");
+        $methodBodyBuilder->addAct("{$variableName}->{$method->name->name}($arguments);");
 
         $dataProviderName = 'invalidDataProvider' . ucfirst($method->name->name);
         $invalidDataProvider = $this->dataProviderGenerator->generate($dataProviderName, $testMethod);
@@ -79,7 +79,8 @@ final readonly class NegativeMethodGenerator implements TestMethodGeneratorInter
             try {
                 $this->methodEvaluator->evaluate($context, $valuesToPrint);
             } catch (\Throwable $e) {
-                $valuesToPrint = array_map($this->dumper->dump(...), $case);
+                $exceptionClass = new Literal('\\' . $e::class . '::class');
+                $valuesToPrint = array_map($this->dumper->dump(...), [$exceptionClass, ...$case]);
                 $case = implode(', ', $valuesToPrint);
                 $invalidDataProvider->addBody("yield [{$case}];");
                 $hasInvalidCases = true;

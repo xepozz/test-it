@@ -88,7 +88,7 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider invalidDataProviderSum
      */
-    public function testInvalidSum(int $expectedValue, int $aValue, int $bValue): void
+    public function testInvalidSum(int $aValue, int $bValue): void
     {
         // arrange
         $userController = new UserController();
