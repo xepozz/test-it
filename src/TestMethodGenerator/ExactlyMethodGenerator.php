@@ -11,6 +11,7 @@ use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\MethodEvaluator;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
+use Yiisoft\VarDumper\ClosureExporter;
 
 final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
 {
@@ -18,6 +19,7 @@ final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
     private MethodEvaluator $methodEvaluator;
     private Dumper $dumper;
     private TestMethodFactory $testMethodFactory;
+    private ClosureExporter $closureExporter;
 
     public function __construct()
     {
@@ -25,6 +27,7 @@ final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
         $this->methodEvaluator = new MethodEvaluator();
         $this->dumper = new Dumper();
         $this->testMethodFactory = new TestMethodFactory();
+        $this->closureExporter = new ClosureExporter();
     }
 
     /**
@@ -44,7 +47,18 @@ final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
 
         $result = $this->methodEvaluator->evaluate($context, []);
 
-        $value = $this->dumper->dump($result);
+        try {
+            if ($this->isClosureAndSerializable($result)) {
+                $value = $this->closureExporter->export($result);
+            } else {
+                $value = $this->dumper->dump($result);
+            }
+        } catch (\Throwable) {
+            /**
+             * Additional check
+             */
+            return [];
+        }
 
         $methodBodyBuilder = MethodBodyBuilder::create();
         $methodBodyBuilder->addArrange("\$expectedValue = {$value};");
@@ -72,17 +86,64 @@ final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
             return false;
         }
 
-        $impossibleTypes = [\Generator::class, 'callable', \Closure::class];
-        if (array_intersect($impossibleTypes, $possibleReturnTypes) !== []) {
+        if (!$this->isSerializationSupported($possibleReturnTypes)) {
             return false;
         }
 
         try {
             $this->methodEvaluator->evaluate($context, []);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
 
+        return true;
+    }
+
+    private function isSerializationSupported(array $possibleReturnTypes): bool
+    {
+        $impossibleTypes = [
+            \Generator::class,
+            'object',
+        ];
+        if (array_intersect($impossibleTypes, $possibleReturnTypes) !== []) {
+            return false;
+        }
+        foreach ($possibleReturnTypes as $type) {
+            if (class_exists($type)) {
+                $reflection = new \ReflectionClass($type);
+                if ($reflection->isUserDefined()) {
+                    return false;
+                }
+                if ($reflection->isAbstract()) {
+                    return false;
+                }
+                if ($reflection->isInternal() && !in_array($type, [\DateTime::class, \DateTimeImmutable::class,])) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private function isClosureAndSerializable(mixed $result): bool
+    {
+        if (!is_callable($result)) {
+            return false;
+        }
+        if (is_array($result)) {
+            throw new \Exception('Array callable serialization is not unsupported.');
+        }
+        if (!$result instanceof \Closure) {
+            return false;
+        }
+        $reflection = new \ReflectionFunction($result);
+        if (!$reflection->isStatic()) {
+            throw new \Exception('Non-static closure serialization is not unsupported.');
+        }
+        if ($reflection->getClosureUsedVariables() !== []) {
+            throw new \Exception('Serialization of closure with bound variable is not supported.');
+        }
         return true;
     }
 }
