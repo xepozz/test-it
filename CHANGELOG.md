@@ -1,9 +1,10 @@
 # Changelog
 
-## 1.3.0 under development
+## 1.2.1 under development
 
+- Fix generating no asserting case
 
-## 1.2.0 under development
+## 1.2.0
 
 - Add and refactor tests
 - Add expecting an exception instead of assertEquals
