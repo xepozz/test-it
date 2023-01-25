@@ -34,15 +34,16 @@ final readonly class TestGenerator
 
         $context = new Context($this->config);
 
+        $visitor = new ContextMethodVisitor($context);
+        $traverser->addVisitor($visitor);
+
         foreach ($finder as $file) {
             $fileSourcePath = $file->getRealPath();
             $fileTargetPath = str_replace([$sourceDirectory, '.php'], [$targetDirectory, 'Test.php'], $fileSourcePath);
             $nodes = (array) $this->parser->parse(file_get_contents($fileSourcePath));
 
-            $visitor = new ContextMethodVisitor($context);
-            $traverser->addVisitor($visitor);
             $traverser->traverse($nodes);
-            $traverser->removeVisitor($visitor);
+//            $traverser->removeVisitor($visitor);
 
             $files = $visitor->dump();
             foreach ($files as $phpFile) {

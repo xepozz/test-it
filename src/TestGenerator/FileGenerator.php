@@ -8,20 +8,14 @@ use Nette\PhpGenerator\PhpFile;
 
 class FileGenerator
 {
-    private PhpFile $file;
-
-    public function __construct()
-    {
-        $this->file = new PhpFile();
-        $this->file->setStrictTypes();
-    }
-
     public function generate(array $namespaces): PhpFile
     {
-        foreach ($namespaces as $namespace) {
-            $this->file->addNamespace($namespace);
-        }
-        return $this->file;
-    }
+        $file = new PhpFile();
+        $file->setStrictTypes();
 
+        foreach ($namespaces as $namespace) {
+            $file->addNamespace($namespace);
+        }
+        return $file;
+    }
 }

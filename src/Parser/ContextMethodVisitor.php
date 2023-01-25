@@ -16,12 +16,8 @@ use Xepozz\TestIt\TestGenerator\FileGenerator;
 use Xepozz\TestIt\TestGenerator\MethodGenerator;
 use Xepozz\TestIt\TestGenerator\NamespaceGenerator;
 
-class ContextMethodVisitor extends NodeVisitorAbstract
+final class ContextMethodVisitor extends NodeVisitorAbstract
 {
-    /**
-     * @var PhpFile[]
-     */
-    public array $generated = [];
     /**
      * @var Method[]
      */
@@ -34,10 +30,25 @@ class ContextMethodVisitor extends NodeVisitorAbstract
      * @var PhpNamespace[]
      */
     public array $generatedNamespaces = [];
+    private FileGenerator $fileGenerator;
+    private NamespaceGenerator $namespaceGenerator;
+    private ClassGenerator $classGenerator;
+    private MethodGenerator $methodGenerator;
 
     public function __construct(
         private readonly Context $context,
     ) {
+        $this->fileGenerator = new FileGenerator();
+        $this->namespaceGenerator = new NamespaceGenerator();
+        $this->classGenerator = new ClassGenerator();
+        $this->methodGenerator = new MethodGenerator();
+    }
+
+    public function beforeTraverse(array $nodes)
+    {
+        $this->generatedMethods = [];
+        $this->generatedClasses = [];
+        $this->generatedNamespaces = [];
     }
 
     public function enterNode(Node $node): ?int
@@ -66,8 +77,7 @@ class ContextMethodVisitor extends NodeVisitorAbstract
     public function leaveNode(Node $node): null
     {
         if ($node instanceof Node\Stmt\Namespace_) {
-            $generator = new NamespaceGenerator();
-            $generated = $generator->generate($this->context, $this->generatedClasses);
+            $generated = $this->namespaceGenerator->generate($this->context, $this->generatedClasses);
             if ($generated !== null) {
                 $this->generatedNamespaces[] = $generated;
             }
@@ -77,8 +87,7 @@ class ContextMethodVisitor extends NodeVisitorAbstract
             if ($this->isClassExcluded($node)) {
                 return null;
             }
-            $generator = new ClassGenerator($node);
-            $generated = $generator->generate($this->generatedMethods);
+            $generated = $this->classGenerator->generate($this->context, $this->generatedMethods);
             if ($generated !== null) {
                 $this->generatedClasses[] = $generated;
             }
@@ -88,15 +97,17 @@ class ContextMethodVisitor extends NodeVisitorAbstract
             if ($this->isMethodIgnored($node)) {
                 return null;
             }
-            $generator = new MethodGenerator();
-            foreach ($generator->generate($this->context) as $testMethod) {
+            $generated = $this->methodGenerator->generate($this->context);
+            foreach ($generated as $testMethod) {
                 $name = $testMethod->getName();
-//                if (isset($this->generatedMethods[$name])) {
-//                    throw new \Exception(sprintf(
-//                        'Generated method with name "%s" was already generated.',
-//                        $name,
-//                    ));
-//                }
+                if (isset($this->generatedMethods[$name])) {
+                    throw new \Exception(
+                        sprintf(
+                            'Generated method with name "%s" was already generated.',
+                            $name,
+                        )
+                    );
+                }
                 $this->generatedMethods[$name] = $testMethod;
             }
             return null;
@@ -111,8 +122,7 @@ class ContextMethodVisitor extends NodeVisitorAbstract
     {
         $files = [];
         foreach ($this->generatedNamespaces as $namespace) {
-            $fileGenerator = new FileGenerator();
-            $files[] = $fileGenerator->generate([$namespace]);
+            $files[] = $this->fileGenerator->generate([$namespace]);
         }
         return $files;
     }

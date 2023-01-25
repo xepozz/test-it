@@ -12,20 +12,19 @@ use Xepozz\TestIt\Parser\Context;
 class NamespaceGenerator
 {
     /**
+     * @param Context $context
      * @param ClassType[] $classes
-     * @return PhpNamespace
+     * @return PhpNamespace|null
      */
     public function generate(
         Context $context,
         array $classes,
     ): ?PhpNamespace {
-        $currentNamespace = $context->namespace;
-
         if ($classes === []) {
             return null;
         }
         $newNamespace = PathFinder::translateNamespace(
-            (string) $currentNamespace->name,
+            (string) $context->namespace->name,
             $context->config->getTargetDirectory()
         );
         $phpNamespace = (new PhpNamespace($newNamespace));
