@@ -2,6 +2,12 @@
 
 ## 1.2.0 under development
 
+- Add and refactor tests
+- Add expecting an exception instead of assertEquals
+- Add values deserialization in negative method
+- Add dependency injector container
+- Make test generators stateless
+- Add yiisoft/var-dumper, because it may dump closure
 - Refactor codebase, decompose TestMethodBuilder onto few separated classes, add more extension points
 - Add "exactly" test method generation. It generates when the result is a constant statement and the method does not have any parameters. 
 - TestGenerator does not generate test classes for classes without methods 
