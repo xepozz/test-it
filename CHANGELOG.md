@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0 under development
+
+
 ## 1.2.0 under development
 
 - Add and refactor tests
