@@ -9,7 +9,7 @@ use Nette\PhpGenerator\Method;
 use PHPUnit\Framework\TestCase;
 use Xepozz\TestIt\Parser\Context;
 
-class ClassGenerator
+final readonly class ClassGenerator
 {
     /**
      * @param Context $context

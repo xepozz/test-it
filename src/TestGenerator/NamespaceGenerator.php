@@ -9,7 +9,7 @@ use Nette\PhpGenerator\PhpNamespace;
 use Xepozz\TestIt\Helper\PathFinder;
 use Xepozz\TestIt\Parser\Context;
 
-class NamespaceGenerator
+final readonly class NamespaceGenerator
 {
     /**
      * @param Context $context
@@ -29,10 +29,11 @@ class NamespaceGenerator
         );
         $phpNamespace = (new PhpNamespace($newNamespace));
 
-        foreach ($classes as $class) {
-            $currentClass = $context->class;
-            $phpNamespace->add($class)
-                ->addUse((string) $currentClass->namespacedName);
+        foreach ($context->classes as $parsedClass) {
+            foreach ($classes as $class) {
+                $phpNamespace->add($class)
+                    ->addUse((string) $parsedClass->namespacedName);
+            }
         }
         return $phpNamespace;
     }

@@ -6,7 +6,7 @@ namespace Xepozz\TestIt\TestGenerator;
 
 use Nette\PhpGenerator\Method;
 
-class DataProviderGenerator
+final readonly class DataProviderGenerator
 {
     public function generate(
         string $name,

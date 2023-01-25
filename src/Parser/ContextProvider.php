@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Xepozz\TestIt;
-
-use Xepozz\TestIt\Parser\Context;
+namespace Xepozz\TestIt\Parser;
 
 final class ContextProvider
 {

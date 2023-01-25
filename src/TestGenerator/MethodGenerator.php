@@ -8,7 +8,7 @@ use Nette\PhpGenerator\Method;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TestMethodGenerator\TestMethodGeneratorInterface;
 
-readonly class MethodGenerator
+final readonly class MethodGenerator
 {
     public function __construct(
         private TestCaseGenerator $testCaseGenerator,

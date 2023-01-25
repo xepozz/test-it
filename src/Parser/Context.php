@@ -11,6 +11,10 @@ final class Context
 {
     public ?Node\Stmt\Namespace_ $namespace = null;
     public ?Node\Stmt\Class_ $class = null;
+    /**
+     * @var ?Node\Stmt\Class_[]
+     */
+    public array $classes = [];
     public ?Node\Stmt\ClassMethod $method = null;
 
     public function __construct(
@@ -21,6 +25,7 @@ final class Context
     public function setClass(Node\Stmt\Class_ $node): void
     {
         $this->class = $node;
+        $this->classes[] = $node;
     }
 
     public function setNamespace(Node\Stmt\Namespace_ $node): void
@@ -31,5 +36,13 @@ final class Context
     public function setClassMethod(Node\Stmt\ClassMethod $node): void
     {
         $this->method = $node;
+    }
+
+    public function reset(): void
+    {
+        $this->namespace = null;
+        $this->class = null;
+        $this->classes = [];
+        $this->method = null;
     }
 }

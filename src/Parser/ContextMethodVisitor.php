@@ -14,7 +14,6 @@ use PhpParser\NodeVisitorAbstract;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
-use Xepozz\TestIt\ContextProvider;
 use Xepozz\TestIt\TestGenerator\ClassGenerator;
 use Xepozz\TestIt\TestGenerator\FileGenerator;
 use Xepozz\TestIt\TestGenerator\MethodGenerator;
@@ -36,7 +35,6 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
      * @var PhpNamespace[]
      */
     public array $generatedNamespaces = [];
-    private Context $context;
 
     public function __construct(
         LoggerInterface $logger,
@@ -51,6 +49,9 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
 
     public function beforeTraverse(array $nodes)
     {
+        $context = $this->contextProvider->getContext();
+        $context->reset();;
+
         $this->generatedMethods = [];
         $this->generatedClasses = [];
         $this->generatedNamespaces = [];
@@ -58,13 +59,22 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
 
     public function enterNode(Node $node): ?int
     {
+        if ($node instanceof Node\Stmt\Enum_) {
+            return NodeTraverser::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
+        }
+        if ($node instanceof Node\Stmt\Trait_) {
+            return NodeTraverser::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
+        }
+
         $context = $this->contextProvider->getContext();
 
         if ($node instanceof Node\Stmt\Namespace_) {
+            $this->generatedClasses = [];
             $context->setNamespace($node);
             return null;
         }
         if ($node instanceof Node\Stmt\Class_) {
+            $this->generatedMethods = [];
             if ($this->isClassExcluded($node)) {
                 return NodeTraverser::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
             }
@@ -83,6 +93,12 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
 
     public function leaveNode(Node $node): null
     {
+        if ($node instanceof Node\Stmt\Enum_) {
+            return null;
+        }
+        if ($node instanceof Node\Stmt\Trait_) {
+            return null;
+        }
         $context = $this->contextProvider->getContext();
 
         if ($node instanceof Node\Stmt\Namespace_) {
@@ -138,6 +154,9 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
 
     private function isClassExcluded(Node\Stmt\Class_ $node): bool
     {
+        if ($node->isAbstract()) {
+            return false;
+        }
         $context = $this->contextProvider->getContext();
 
         return in_array($node->namespacedName->toString(), $context->config->getExcludedClasses());
@@ -145,6 +164,6 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
 
     private function isMethodIgnored(Node\Stmt\ClassMethod $node): bool
     {
-        return $node->isMagic();
+        return $node->isMagic() || $node->isProtected() || $node->isPrivate();
     }
 }

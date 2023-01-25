@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Xepozz\TestIt\Helper\Finder;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\Parser\ContextMethodVisitor;
+use Xepozz\TestIt\Parser\ContextProvider;
 
 final class TestGenerator implements LoggerAwareInterface
 {

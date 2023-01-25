@@ -6,7 +6,7 @@ namespace Xepozz\TestIt\TestGenerator;
 
 use Nette\PhpGenerator\PhpFile;
 
-class FileGenerator
+final readonly class FileGenerator
 {
     public function generate(array $namespaces): PhpFile
     {

@@ -42,7 +42,10 @@ final readonly class NoAssertionGenerator implements TestMethodGeneratorInterfac
         $method = $context->method;
 
         $possibleReturnTypes = $this->typeNormalizer->denormalize($method->getReturnType());
+        if ($possibleReturnTypes !== []) {
+            return false;
+        }
 
-        return $possibleReturnTypes === [];
+        return $method->getParams() === [];
     }
 }
