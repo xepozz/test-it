@@ -10,4 +10,8 @@ class UserController
     {
         return $a + $b;
     }
+
+    public function diff($a, $b): void
+    {
+    }
 }
