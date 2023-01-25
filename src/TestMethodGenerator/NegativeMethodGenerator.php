@@ -91,6 +91,9 @@ final readonly class NegativeMethodGenerator implements TestMethodGeneratorInter
 
     public function supports(Context $context, iterable $cases): bool
     {
+        if (!$context->config->isCaseEvaluationEnabled()) {
+            return false;
+        }
         foreach ($cases as $case) {
             $valuesToPrint = $this->phpEntitiesConverter->convert($case);
             try {
