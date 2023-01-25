@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Xepozz\TestIt;
 
+use Xepozz\TestIt\NamingStrategy\MethodNameStrategyEnum;
+
 final class Config
 {
     private array $excludedDirectories = [];
@@ -16,6 +18,7 @@ final class Config
     private string $sourceDirectory = 'src';
     private string $targetDirectory = 'tests';
     private array $includedDirectories = [];
+    private MethodNameStrategyEnum $methodNamingStrategy = MethodNameStrategyEnum::CAMEL_CASE;
 
     /**
      * Disabled test cases evaluation at runtime.
@@ -123,6 +126,23 @@ final class Config
     public function setTargetDirectory(string $directory): self
     {
         $this->targetDirectory = $directory;
+        return $this;
+    }
+
+    public function getMethodNamingStrategy(): MethodNameStrategyEnum
+    {
+        return $this->methodNamingStrategy;
+    }
+
+    public function useCamelCaseInTestNaming(): self
+    {
+        $this->methodNamingStrategy = MethodNameStrategyEnum::CAMEL_CASE;
+        return $this;
+    }
+
+    public function useSnakeCaseInTestNaming(): self
+    {
+        $this->methodNamingStrategy = MethodNameStrategyEnum::SNAKE_CASE;
         return $this;
     }
 }

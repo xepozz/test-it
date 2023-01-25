@@ -6,6 +6,7 @@ namespace Xepozz\TestIt\TestMethodGenerator;
 
 use Xepozz\TestIt\Helper\TestMethodFactory;
 use Xepozz\TestIt\MethodBodyBuilder;
+use Xepozz\TestIt\NamingStrategy\MethodNameStrategy;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
 
@@ -14,6 +15,7 @@ final readonly class NoAssertionGenerator implements TestMethodGeneratorInterfac
     public function __construct(
         private TypeNormalizer $typeNormalizer,
         private TestMethodFactory $testMethodFactory,
+        private MethodNameStrategy $methodNameStrategy,
     ) {
     }
 
@@ -22,9 +24,9 @@ final readonly class NoAssertionGenerator implements TestMethodGeneratorInterfac
         $class = $context->class;
         $method = $context->method;
 
-        $testMethodName = 'test' . ucfirst($method->name->name);
+        $testMethodNameParts = ['test', $method->name->name];
+        $testMethodName = $this->methodNameStrategy->generate($context, $testMethodNameParts);
         $testMethod = $this->testMethodFactory->create($testMethodName, $method);
-        $testMethod = $testMethod->cloneWithName($testMethodName);
 
         $variableName = '$' . lcfirst($class->name->name);
         $methodBodyBuilder = MethodBodyBuilder::create();

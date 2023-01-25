@@ -9,6 +9,7 @@ use Nette\PhpGenerator\Method;
 use Xepozz\TestIt\Helper\TestMethodFactory;
 use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\MethodEvaluator;
+use Xepozz\TestIt\NamingStrategy\MethodNameStrategy;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
 use Yiisoft\VarDumper\ClosureExporter;
@@ -21,6 +22,7 @@ final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterf
         private Dumper $dumper,
         private TestMethodFactory $testMethodFactory,
         private ClosureExporter $closureExporter,
+        private MethodNameStrategy $methodNameStrategy,
     ) {
     }
 
@@ -34,7 +36,8 @@ final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterf
         $class = $context->class;
         $method = $context->method;
 
-        $testMethodName = 'test' . ucfirst($method->name->name);
+        $testMethodNameParts = ['test', $method->name->name];
+        $testMethodName = $this->methodNameStrategy->generate($context, $testMethodNameParts);
         $testMethod = $this->testMethodFactory->create($testMethodName, $method);
 
         $variableName = '$' . lcfirst($class->name->name);
