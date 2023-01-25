@@ -2,6 +2,8 @@
 
 ## 1.2.0 under development
 
+- Refactor codebase, decompose TestMethodBuilder onto few separated classes, add more extension points
+- Add "exactly" test method generation. It generates when the result is a constant statement and the method does not have any parameters. 
 - TestGenerator does not generate test classes for classes without methods 
 - Use generators (`yield` statement) instead of returning an array 
 
