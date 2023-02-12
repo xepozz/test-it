@@ -12,6 +12,10 @@ final class TypeSerializer
      */
     public function serialize(array $types): string
     {
+        if (count($types) === 2 && $types[0] === 'null') {
+            unset($types[0]);
+            return '?' . $types[1];
+        }
         return implode('|', array_unique($types));
     }
 }
