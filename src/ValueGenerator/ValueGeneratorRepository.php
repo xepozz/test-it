@@ -6,10 +6,10 @@ namespace Xepozz\TestIt\ValueGenerator;
 
 use Xepozz\TestIt\Parser\ContextProvider;
 
-final class ValueGeneratorRepository
+final readonly class ValueGeneratorRepository
 {
     public function __construct(
-        private readonly ContextProvider $contextProvider,
+        private ContextProvider $contextProvider,
     ) {
     }
     public function getByType(mixed $possibleType): ?ValueGeneratorInterface

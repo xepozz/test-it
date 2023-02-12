@@ -8,10 +8,10 @@ use Nette\PhpGenerator\Literal;
 use PhpParser\Node;
 use Xepozz\TestIt\Parser\ContextProvider;
 
-final class ClassValueGenerator implements ValueGeneratorInterface
+final readonly class ClassValueGenerator implements ValueGeneratorInterface
 {
     public function __construct(
-        private readonly ContextProvider $contextProvider,
+        private ContextProvider $contextProvider,
     ) {
     }
 

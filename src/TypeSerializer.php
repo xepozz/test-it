@@ -6,10 +6,10 @@ namespace Xepozz\TestIt;
 
 use Xepozz\TestIt\Parser\ContextProvider;
 
-final class TypeSerializer
+final readonly class TypeSerializer
 {
     public function __construct(
-        private readonly ContextProvider $contextProvider
+        private ContextProvider $contextProvider
     )
     {
     }
