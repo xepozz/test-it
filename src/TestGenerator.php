@@ -20,7 +20,7 @@ final class TestGenerator implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    private Parser $parser;
+    private readonly Parser $parser;
 
     public function __construct(
         LoggerInterface $logger,

@@ -20,7 +20,6 @@ final readonly class MethodGenerator
     }
 
     /**
-     * @param Context $context
      * @return Method[]
      */
     public function generate(Context $context): array

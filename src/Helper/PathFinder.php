@@ -83,9 +83,7 @@ final class PathFinder
     }
 
     /**
-     * @param string $search
      * @param string[] $strings
-     * @return string|null
      */
     private static function getClosest(string $search, array $strings): ?string
     {
@@ -107,9 +105,7 @@ final class PathFinder
     }
 
     /**
-     * @param string $search
      * @param string[][] $array
-     * @return array
      */
     private static function getClosestWithKeyAndValue(string $search, array $array): array
     {

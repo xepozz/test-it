@@ -86,7 +86,7 @@ final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterf
 
         try {
             $this->methodEvaluator->evaluate($context, []);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
 

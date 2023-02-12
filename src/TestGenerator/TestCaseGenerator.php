@@ -20,7 +20,6 @@ final readonly class TestCaseGenerator
     }
 
     /**
-     * @param Context $context
      * @return array[]
      */
     public function generate(Context $context): iterable

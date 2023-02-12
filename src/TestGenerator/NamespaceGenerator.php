@@ -12,9 +12,7 @@ use Xepozz\TestIt\Parser\Context;
 final readonly class NamespaceGenerator
 {
     /**
-     * @param Context $context
      * @param ClassType[] $classes
-     * @return PhpNamespace|null
      */
     public function generate(
         Context $context,

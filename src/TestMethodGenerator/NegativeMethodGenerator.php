@@ -103,7 +103,7 @@ final readonly class NegativeMethodGenerator implements TestMethodGeneratorInter
             $valuesToPrint = $this->phpEntitiesConverter->convert($case);
             try {
                 $this->methodEvaluator->evaluate($context, $valuesToPrint);
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 return true;
             }
         }

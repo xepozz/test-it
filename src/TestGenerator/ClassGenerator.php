@@ -12,9 +12,7 @@ use Xepozz\TestIt\Parser\Context;
 final readonly class ClassGenerator
 {
     /**
-     * @param Context $context
      * @param Method[] $methods
-     * @return ClassType|null
      */
     public function generate(Context $context, array $methods): ?ClassType
     {

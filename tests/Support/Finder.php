@@ -7,7 +7,6 @@ namespace Xepozz\TestIt\Tests\Support;
 class Finder
 {
     /**
-     * @param string $dir
      * @return \SplFileInfo[]
      */
     public static function getFiles(string $dir): array
