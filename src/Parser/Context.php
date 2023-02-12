@@ -10,9 +10,9 @@ use Xepozz\TestIt\Config;
 final class Context
 {
     public ?Node\Stmt\Namespace_ $namespace = null;
-    public ?Node\Stmt\Class_ $class = null;
+    public null|Node\Stmt\Class_|Node\Stmt\Enum_ $class = null;
     /**
-     * @var ?Node\Stmt\Class_[]
+     * @var Node\Stmt\Class_[]|Node\Stmt\Enum_[]|null
      */
     public array $classes = [];
     public ?Node\Stmt\ClassMethod $method = null;
@@ -22,7 +22,7 @@ final class Context
     ) {
     }
 
-    public function setClass(Node\Stmt\Class_ $node): void
+    public function setClass(Node\Stmt\Class_|Node\Stmt\Enum_ $node): void
     {
         $this->class = $node;
         $this->classes[] = $node;

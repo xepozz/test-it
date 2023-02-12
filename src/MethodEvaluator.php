@@ -19,9 +19,12 @@ final class MethodEvaluator
          * TODO: make a workaround
          */
         $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
-        $object = $reflectionClass->newInstanceWithoutConstructor();
 
         try {
+            if ($method->isStatic()) {
+                return [$class->namespacedName->toString(), $method->name->toString()](...$arguments);
+            }
+            $object = $reflectionClass->newInstanceWithoutConstructor();
             return $object->{$method->name->name}(...$arguments);
         } catch (\Throwable $e) {
             throw new \RuntimeException(

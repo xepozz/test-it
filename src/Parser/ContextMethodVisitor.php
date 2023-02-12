@@ -59,9 +59,6 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
 
     public function enterNode(Node $node): ?int
     {
-        if ($node instanceof Node\Stmt\Enum_) {
-            return NodeTraverser::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
-        }
         if ($node instanceof Node\Stmt\Trait_) {
             return NodeTraverser::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
         }
@@ -73,7 +70,7 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
             $context->setNamespace($node);
             return null;
         }
-        if ($node instanceof Node\Stmt\Class_) {
+        if ($node instanceof Node\Stmt\Class_ || $node instanceof Node\Stmt\Enum_) {
             $this->generatedMethods = [];
             if ($this->isClassExcluded($node)) {
                 return NodeTraverser::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
@@ -93,9 +90,6 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
 
     public function leaveNode(Node $node): null
     {
-        if ($node instanceof Node\Stmt\Enum_) {
-            return null;
-        }
         if ($node instanceof Node\Stmt\Trait_) {
             return null;
         }
@@ -108,7 +102,7 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
             }
             return null;
         }
-        if ($node instanceof Node\Stmt\Class_) {
+        if ($node instanceof Node\Stmt\Class_ || $node instanceof Node\Stmt\Enum_) {
             if ($this->isClassExcluded($node)) {
                 return null;
             }
@@ -152,9 +146,9 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
         return $files;
     }
 
-    private function isClassExcluded(Node\Stmt\Class_ $node): bool
+    private function isClassExcluded(Node\Stmt\Class_|Node\Stmt\Enum_ $node): bool
     {
-        if ($node->isAbstract()) {
+        if ($node instanceof Node\Stmt\Class_ && $node->isAbstract()) {
             return false;
         }
         $context = $this->contextProvider->getContext();

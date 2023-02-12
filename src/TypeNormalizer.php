@@ -36,6 +36,8 @@ final class TypeNormalizer
             foreach ($type->types as $type) {
                 $result = [...$result, ...$this->denormalize($type)];
             }
+        } elseif ($type instanceof Name) {
+            return [$type->toString()];
         }
         return $result;
     }
