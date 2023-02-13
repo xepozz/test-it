@@ -38,7 +38,7 @@ abstract class AbstractTestCase extends TestCase
         $testGenerator = $container->get(TestGenerator::class);
         $testGenerator->process($config);
 
-        $compareFiles = Finder::getFiles($compareDirectory);
+        $compareFiles = Finder::getFiles($compareDirectory, '*Test.php');
         $resultFiles = Finder::getFiles($targetDirectory);
 
         $this->assertEquals(

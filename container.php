@@ -10,6 +10,7 @@ use Xepozz\TestIt\TestMethodGenerator\NegativeMethodGenerator;
 use Xepozz\TestIt\TestMethodGenerator\NoAssertionGenerator;
 use Xepozz\TestIt\TestMethodGenerator\PositiveMethodGenerator;
 use Xepozz\TestIt\ValueInitiator\AggregatedValueInitiator;
+use Xepozz\TestIt\ValueInitiator\ContainerValueInitiator;
 use Xepozz\TestIt\ValueInitiator\SimpleValueInitiator;
 use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 use Yiisoft\Definitions\DynamicReferencesArray;
@@ -21,6 +22,7 @@ return [
         '__construct()' => [
             'valueInitiators' => DynamicReferencesArray::from([
                 SimpleValueInitiator::class,
+                ContainerValueInitiator::class,
             ]),
         ],
     ],

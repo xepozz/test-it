@@ -26,8 +26,7 @@ final class TestGenerator implements LoggerAwareInterface
         LoggerInterface $logger,
         private readonly ContextMethodVisitor $contextMethodVisitor,
         private readonly ContextProvider $contextProvider,
-    )
-    {
+    ) {
         $this->logger = $logger;
         $this->parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
     }
