@@ -11,6 +11,7 @@ use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\MethodEvaluator;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
+use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 use Yiisoft\VarDumper\ClosureExporter;
 
 final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterface
@@ -21,6 +22,7 @@ final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterf
         private Dumper $dumper,
         private TestMethodFactory $testMethodFactory,
         private ClosureExporter $closureExporter,
+        private ValueInitiatorInterface $valueInitiator,
     ) {
     }
 
@@ -56,7 +58,8 @@ final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterf
 
         $methodBodyBuilder = MethodBodyBuilder::create();
         $methodBodyBuilder->addArrange("\$expectedValue = {$value};");
-        $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
+        $classInitiation = $this->valueInitiator->getString($class);
+        $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
         $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}();");
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
 

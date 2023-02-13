@@ -9,10 +9,21 @@ use Xepozz\TestIt\TestMethodGenerator\ExactlyMethodGenerator;
 use Xepozz\TestIt\TestMethodGenerator\NegativeMethodGenerator;
 use Xepozz\TestIt\TestMethodGenerator\NoAssertionGenerator;
 use Xepozz\TestIt\TestMethodGenerator\PositiveMethodGenerator;
+use Xepozz\TestIt\ValueInitiator\AggregatedValueInitiator;
+use Xepozz\TestIt\ValueInitiator\SimpleValueInitiator;
+use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 use Yiisoft\Definitions\DynamicReferencesArray;
 
 return [
     LoggerInterface::class => new NullLogger(),
+    ValueInitiatorInterface::class => AggregatedValueInitiator::class,
+    AggregatedValueInitiator::class => [
+        '__construct()' => [
+            'valueInitiators' => DynamicReferencesArray::from([
+                SimpleValueInitiator::class,
+            ]),
+        ],
+    ],
     MethodGenerator::class => [
         '__construct()' => [
             'testMethodGenerators' => DynamicReferencesArray::from([

@@ -5,9 +5,15 @@ declare(strict_types=1);
 namespace Xepozz\TestIt;
 
 use Xepozz\TestIt\Parser\Context;
+use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 
-final class MethodEvaluator
+final readonly class MethodEvaluator
 {
+    public function __construct(
+        private ValueInitiatorInterface $valueInitiator
+    ) {
+    }
+
     public function evaluate(Context $context, array $arguments)
     {
         $class = $context->class;
@@ -18,8 +24,7 @@ final class MethodEvaluator
          * It's impossible to find them with Reflection
          * TODO: make a workaround
          */
-        $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
-        $object = $reflectionClass->newInstanceWithoutConstructor();
+        $object = $this->valueInitiator->getObject($class);
 
         try {
             return $object->{$method->name->name}(...$arguments);

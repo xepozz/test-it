@@ -14,6 +14,7 @@ use Xepozz\TestIt\PhpEntitiesConverter;
 use Xepozz\TestIt\TestGenerator\DataProviderGenerator;
 use Xepozz\TestIt\TypeNormalizer;
 use Xepozz\TestIt\TypeSerializer;
+use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 
 final readonly class PositiveMethodGenerator implements TestMethodGeneratorInterface
 {
@@ -25,6 +26,7 @@ final readonly class PositiveMethodGenerator implements TestMethodGeneratorInter
         private DataProviderGenerator $dataProviderGenerator,
         private TestMethodFactory $testMethodFactory,
         private PhpEntitiesConverter $phpEntitiesConverter,
+        private ValueInitiatorInterface $valueInitiator,
     ) {
     }
 
@@ -57,7 +59,8 @@ final readonly class PositiveMethodGenerator implements TestMethodGeneratorInter
         $variableName = '$' . lcfirst($class->name->name);
 
         $methodBodyBuilder = MethodBodyBuilder::create();
-        $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
+        $classInitiation = $this->valueInitiator->getString($class);
+        $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
         $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}($arguments);");
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
 
