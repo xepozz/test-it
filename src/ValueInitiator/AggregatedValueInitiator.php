@@ -46,6 +46,13 @@ final readonly class AggregatedValueInitiator implements ValueInitiatorInterface
         );
     }
 
+    public function generateArtifacts(Class_ $class): void
+    {
+        foreach ($this->valueInitiators as $valueInitiator) {
+            $valueInitiator->generateArtifacts($class);
+        }
+    }
+
     public function supports(Class_ $class): bool
     {
         foreach ($this->valueInitiators as $valueInitiator) {

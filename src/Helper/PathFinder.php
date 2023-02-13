@@ -140,7 +140,7 @@ final class PathFinder
 
     private static function normalizePath(string $path): string
     {
-        $path = realpath($path);
+        $path = realpath($path)?:$path;
         return $path[-1] === DIRECTORY_SEPARATOR ? $path : $path . DIRECTORY_SEPARATOR;
     }
 

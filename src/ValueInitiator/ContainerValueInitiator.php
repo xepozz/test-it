@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Xepozz\TestIt\ValueInitiator;
 
 use PhpParser\Node\Stmt\Class_;
+use Xepozz\TestIt\Helper\PathFinder;
+use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\Parser\ContextProvider;
 
 final readonly class ContainerValueInitiator implements ValueInitiatorInterface
 {
+    private const TRAIT_CLASS = 'ContainerAwareTrait';
     public function __construct(
         private ContextProvider $contextProvider,
     ) {
@@ -16,16 +19,31 @@ final readonly class ContainerValueInitiator implements ValueInitiatorInterface
 
     public function getString(Class_ $class): string
     {
+        $context = $this->getContext();
+        $traitNamespace = PathFinder::getNamespaceByPath(
+            $context->config->getTargetDirectory() . '/Support',
+        );
+        $context->classContext->addTrait($traitNamespace . '\\'.self::TRAIT_CLASS);
         return "self::\$container->get({$class->name}::class)";
     }
 
     public function getObject(Class_ $class): object
     {
-        return $this->contextProvider->getContext()->config->getContainer()->get((string) $class->namespacedName);
+        return $this->getContext()->config->getContainer()->get((string) $class->namespacedName);
+    }
+
+    public function generateArtifacts(Class_ $class): void
+    {
     }
 
     public function supports(Class_ $class): bool
     {
-        return $this->contextProvider->getContext()->config->getContainer() !== null;
+        $container = $this->getContext()->config->getContainer();
+        return $container !== null && $container->has((string) $class->namespacedName);
+    }
+
+    private function getContext(): Context
+    {
+        return $this->contextProvider->getContext();
     }
 }

@@ -12,5 +12,7 @@ interface ValueInitiatorInterface
 
     public function getObject(Class_ $class): object;
 
+    public function generateArtifacts(Class_ $class): void;
+
     public function supports(Class_ $class): bool;
 }

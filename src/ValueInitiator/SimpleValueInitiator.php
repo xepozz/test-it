@@ -28,6 +28,10 @@ final class SimpleValueInitiator implements ValueInitiatorInterface
         return $reflectionClass->newInstanceWithoutConstructor();
     }
 
+    public function generateArtifacts(Class_ $class): void
+    {
+    }
+
     public function supports(Class_ $class): bool
     {
         try {

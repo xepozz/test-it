@@ -8,15 +8,17 @@ use Psr\Container\ContainerInterface;
 
 trait ContainerAwareTrait
 {
-    public static ?ContainerInterface $container = null;
+    private static ?ContainerInterface $container = null;
+
 
     protected function setUp(): void
     {
         $this->initializeContainer();
     }
 
+
     private function initializeContainer(): void
     {
-        self::$container ??= (fn () => require_once __DIR__ . '/test-container.php')();
+        self::$container ??= (fn() => require_once __DIR__ . '/test-container.php')();
     }
 }

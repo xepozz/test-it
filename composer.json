@@ -9,6 +9,7 @@
     "symfony/console": "^6.2",
     "symfony/finder": "^5|^6",
     "yiisoft/di": "^1.2",
+    "yiisoft/event-dispatcher": "^1.1",
     "yiisoft/var-dumper": "^1.5"
   },
   "require-dev": {
