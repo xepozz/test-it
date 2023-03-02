@@ -54,11 +54,15 @@ final readonly class PositiveMethodGenerator implements TestMethodGeneratorInter
                 ->setType($this->typeSerializer->serialize($this->typeNormalizer->denormalize($parameter->type)));
         }
         $arguments = $arguments === [] ? null : implode(', ', $arguments);
-        $variableName = '$' . lcfirst($class->name->name);
 
         $methodBodyBuilder = MethodBodyBuilder::create();
-        $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
-        $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}($arguments);");
+        if ($method->isStatic()) {
+            $methodBodyBuilder->addAct("\$actualValue = {$class->name->name}::{$method->name->name}($arguments);");
+        } else {
+            $variableName = '$' . lcfirst($class->name->name);
+            $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
+            $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}($arguments);");
+        }
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
 
         $dataProviderName = 'dataProvider' . ucfirst($method->name->name);
