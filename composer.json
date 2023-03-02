@@ -13,6 +13,7 @@
     "yiisoft/var-dumper": "^1.5"
   },
   "require-dev": {
+    "icanhazstring/composer-unused": "^0.8.6",
     "maglnet/composer-require-checker": "^4.5",
     "phpunit/phpunit": "^9.5.28"
   },
