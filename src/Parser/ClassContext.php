@@ -13,7 +13,6 @@ class ClassContext
 
     /**
      * @param class-string $class
-     * @return void
      */
     public function addTrait(string $class): void
     {

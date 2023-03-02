@@ -10,8 +10,6 @@ use Xepozz\TestIt\Parser\Context;
 interface TestMethodGeneratorInterface
 {
     /**
-     * @param Context $context
-     * @param array $cases
      * @return Method[]
      */
     public function generate(Context $context, array $cases): iterable;

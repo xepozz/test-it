@@ -33,8 +33,6 @@ final class PositiveMethodGenerator implements TestMethodGeneratorInterface
     }
 
     /**
-     * @param Context $context
-     * @param array $cases
      * @return Method[]
      */
     public function generate(Context $context, array $cases): array

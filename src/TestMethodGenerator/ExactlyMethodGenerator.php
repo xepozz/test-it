@@ -29,8 +29,6 @@ final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
     }
 
     /**
-     * @param Context $context
-     * @param array $cases
      * @return Method[]
      */
     public function generate(Context $context, array $cases): array
@@ -121,7 +119,7 @@ final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
                 if ($reflection->isAbstract()) {
                     return false;
                 }
-                if ($reflection->isInternal() && !in_array($type, [\DateTime::class, \DateTimeImmutable::class,])) {
+                if ($reflection->isInternal() && !in_array($type, [\DateTime::class, \DateTimeImmutable::class])) {
                     return false;
                 }
             }

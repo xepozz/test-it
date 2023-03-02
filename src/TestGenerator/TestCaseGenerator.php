@@ -20,7 +20,7 @@ final class TestCaseGenerator
     }
 
     /**
-     * @return array[]
+     * @return \Traversable
      */
     public function generate(Context $context): iterable
     {

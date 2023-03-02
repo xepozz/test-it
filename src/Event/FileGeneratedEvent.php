@@ -12,7 +12,6 @@ final class FileGeneratedEvent
     public function __construct(
         public readonly Context $context,
         public readonly PhpFile $file,
-    )
-    {
+    ) {
     }
 }

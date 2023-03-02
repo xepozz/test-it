@@ -10,8 +10,7 @@ final class TypeSerializer
 {
     public function __construct(
         private readonly ContextProvider $contextProvider
-    )
-    {
+    ) {
     }
 
     /**
@@ -23,7 +22,7 @@ final class TypeSerializer
             unset($types[0]);
             return '?' . $this->serialize($types);
         }
-        if (in_array('self', $types,true)){
+        if (in_array('self', $types, true)) {
             $context = $this->contextProvider->getContext();
             $selfPosition = array_search('self', $types);
             $types[$selfPosition] = $context->class->name;
