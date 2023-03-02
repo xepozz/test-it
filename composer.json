@@ -2,6 +2,7 @@
   "name": "xepozz/test-it",
   "bin": ["test-it"],
   "require": {
+    "php": "^8.1",
     "nette/php-generator": "^3.6.9",
     "nikic/php-parser": "^4.15",
     "psr/container": "^2.0",
@@ -13,6 +14,8 @@
     "yiisoft/var-dumper": "^1.5"
   },
   "require-dev": {
+    "icanhazstring/composer-unused": "^0.8.6",
+    "maglnet/composer-require-checker": "^4.5",
     "phpunit/phpunit": "^9.5.28"
   },
   "autoload": {
