@@ -12,16 +12,18 @@ use Xepozz\TestIt\MethodEvaluator;
 use Xepozz\TestIt\NamingStrategy\MethodNameStrategy;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
+use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 use Yiisoft\VarDumper\ClosureExporter;
 
-final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterface
+final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
 {
     public function __construct(
-        private TypeNormalizer $typeNormalizer,
-        private MethodEvaluator $methodEvaluator,
-        private Dumper $dumper,
-        private TestMethodFactory $testMethodFactory,
-        private ClosureExporter $closureExporter,
+        private readonly TypeNormalizer $typeNormalizer,
+        private readonly MethodEvaluator $methodEvaluator,
+        private readonly Dumper $dumper,
+        private readonly TestMethodFactory $testMethodFactory,
+        private readonly ClosureExporter $closureExporter,
+        private readonly ValueInitiatorInterface $valueInitiator,
         private MethodNameStrategy $methodNameStrategy,
     ) {
     }
@@ -59,8 +61,13 @@ final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterf
 
         $methodBodyBuilder = MethodBodyBuilder::create();
         $methodBodyBuilder->addArrange("\$expectedValue = {$value};");
-        $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
-        $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}();");
+        if ($method->isStatic()) {
+            $methodBodyBuilder->addAct("\$actualValue = {$class->name->name}::{$method->name->name}();");
+        } else {
+            $classInitiation = $this->valueInitiator->getString($class);
+            $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+            $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}();");
+        }
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
 
         $testMethod->addBody($methodBodyBuilder->build());
@@ -89,7 +96,7 @@ final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterf
 
         try {
             $this->methodEvaluator->evaluate($context, []);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
 

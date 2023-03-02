@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Xepozz\TestIt;
 
+use Psr\Container\ContainerInterface;
+
 use Xepozz\TestIt\NamingStrategy\MethodNameStrategyEnum;
 
 final class Config
@@ -19,6 +21,11 @@ final class Config
     private string $targetDirectory = 'tests';
     private array $includedDirectories = [];
     private MethodNameStrategyEnum $methodNamingStrategy = MethodNameStrategyEnum::CAMEL_CASE;
+    private ?ContainerInterface $container = null;
+    /**
+     * @var callable|null
+     */
+    public $containerFactory = null;
 
     /**
      * Disabled test cases evaluation at runtime.
@@ -143,6 +150,23 @@ final class Config
     public function useSnakeCaseInTestNaming(): self
     {
         $this->methodNamingStrategy = MethodNameStrategyEnum::SNAKE_CASE;
+        return $this;
+    }
+
+    public function getContainer(): ?ContainerInterface
+    {
+        return $this->container;
+    }
+
+    public function getContainerFactory(): ?callable
+    {
+        return $this->containerFactory;
+    }
+
+    public function setContainerFactory(callable $callback): self
+    {
+        $this->containerFactory = $callback;
+        $this->container = $callback();
         return $this;
     }
 }

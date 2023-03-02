@@ -1,9 +1,13 @@
 # Changelog
 
-## 1.3.0 under development
+## 1.2.1 under development
 
+- Add event dispatcher listens class, method and file generators 
+- Add initiators to be able to construct any objects by user side
+- Add PHPUnit, composer-unused, composer-require-checker to CI
+- Fix generating no asserting case
 
-## 1.2.0 under development
+## 1.2.0
 
 - Add and refactor tests
 - Add expecting an exception instead of assertEquals

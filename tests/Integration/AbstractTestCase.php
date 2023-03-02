@@ -30,7 +30,7 @@ abstract class AbstractTestCase extends TestCase
 
         $config = $this->getConfig($sourceDirectory, $targetDirectory);
 
-        $definitions = require dirname(__DIR__, 2) . '/container.php';
+        $definitions = require dirname(__DIR__, 2) . '/config/container.php';
         $containerConfig = ContainerConfig::create()
             ->withDefinitions($definitions);
         $container = new Container($containerConfig);

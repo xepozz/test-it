@@ -8,7 +8,7 @@ use Nette\PhpGenerator\Dumper;
 
 final class PhpEntitiesConverter
 {
-    private Dumper $dumper;
+    private readonly Dumper $dumper;
 
     public function __construct()
     {

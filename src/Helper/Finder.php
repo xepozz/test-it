@@ -10,7 +10,6 @@ use Xepozz\TestIt\Config;
 final class Finder
 {
     /**
-     * @param Config $config
      * @return SplFileInfo[]
      */
     public static function fromConfig(Config $config): iterable

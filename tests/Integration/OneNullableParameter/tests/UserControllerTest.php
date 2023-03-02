@@ -11,7 +11,7 @@ final class UserControllerTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider dataProviderInverse
      */
-    public function testInverse(null|bool $expectedValue, bool $valueValue): void
+    public function testInverse(?bool $expectedValue, bool $valueValue): void
     {
         // arrange
         $userController = new UserController();

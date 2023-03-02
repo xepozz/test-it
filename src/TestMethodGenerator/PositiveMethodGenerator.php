@@ -15,18 +15,20 @@ use Xepozz\TestIt\PhpEntitiesConverter;
 use Xepozz\TestIt\TestGenerator\DataProviderGenerator;
 use Xepozz\TestIt\TypeNormalizer;
 use Xepozz\TestIt\TypeSerializer;
+use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 
-final readonly class PositiveMethodGenerator implements TestMethodGeneratorInterface
+final class PositiveMethodGenerator implements TestMethodGeneratorInterface
 {
     public function __construct(
-        private TypeSerializer $typeSerializer,
-        private TypeNormalizer $typeNormalizer,
-        private MethodEvaluator $methodEvaluator,
-        private Dumper $dumper,
-        private DataProviderGenerator $dataProviderGenerator,
-        private TestMethodFactory $testMethodFactory,
-        private PhpEntitiesConverter $phpEntitiesConverter,
-        private MethodNameStrategy $methodNameStrategy,
+        private readonly TypeSerializer $typeSerializer,
+        private readonly TypeNormalizer $typeNormalizer,
+        private readonly MethodEvaluator $methodEvaluator,
+        private readonly Dumper $dumper,
+        private readonly DataProviderGenerator $dataProviderGenerator,
+        private readonly TestMethodFactory $testMethodFactory,
+        private readonly PhpEntitiesConverter $phpEntitiesConverter,
+        private readonly ValueInitiatorInterface $valueInitiator,
+        private readonly MethodNameStrategy $methodNameStrategy,
     ) {
     }
 
@@ -57,11 +59,16 @@ final readonly class PositiveMethodGenerator implements TestMethodGeneratorInter
                 ->setType($this->typeSerializer->serialize($this->typeNormalizer->denormalize($parameter->type)));
         }
         $arguments = $arguments === [] ? null : implode(', ', $arguments);
-        $variableName = '$' . lcfirst($class->name->name);
 
         $methodBodyBuilder = MethodBodyBuilder::create();
-        $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
-        $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}($arguments);");
+        if ($method->isStatic()) {
+            $methodBodyBuilder->addAct("\$actualValue = {$class->name->name}::{$method->name->name}($arguments);");
+        } else {
+            $variableName = '$' . lcfirst($class->name->name);
+            $classInitiation = $this->valueInitiator->getString($class);
+            $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+            $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}($arguments);");
+        }
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
 
         $dataProviderNameParts = ['data', 'provider', $method->name->name];

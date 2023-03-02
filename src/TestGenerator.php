@@ -20,14 +20,13 @@ final class TestGenerator implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    private Parser $parser;
+    private readonly Parser $parser;
 
     public function __construct(
         LoggerInterface $logger,
         private readonly ContextMethodVisitor $contextMethodVisitor,
         private readonly ContextProvider $contextProvider,
-    )
-    {
+    ) {
         $this->logger = $logger;
         $this->parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
     }

@@ -9,13 +9,15 @@ use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\NamingStrategy\MethodNameStrategy;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
+use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 
-final readonly class NoAssertionGenerator implements TestMethodGeneratorInterface
+final class NoAssertionGenerator implements TestMethodGeneratorInterface
 {
     public function __construct(
-        private TypeNormalizer $typeNormalizer,
-        private TestMethodFactory $testMethodFactory,
-        private MethodNameStrategy $methodNameStrategy,
+        private readonly TypeNormalizer $typeNormalizer,
+        private readonly TestMethodFactory $testMethodFactory,
+        private readonly ValueInitiatorInterface $valueInitiator,
+        private readonly MethodNameStrategy $methodNameStrategy,
     ) {
     }
 
@@ -30,7 +32,8 @@ final readonly class NoAssertionGenerator implements TestMethodGeneratorInterfac
 
         $variableName = '$' . lcfirst($class->name->name);
         $methodBodyBuilder = MethodBodyBuilder::create();
-        $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
+        $classInitiation = $this->valueInitiator->getString($class);
+        $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
         $methodBodyBuilder->addAssert("\$this->expectNotToPerformAssertions();");
         $methodBodyBuilder->addAssert("{$variableName}->{$method->name->name}();");
 
