@@ -16,7 +16,6 @@ final class TypeSerializer
 
     /**
      * @param string[] $types
-     * @return string
      */
     public function serialize(array $types): string
     {

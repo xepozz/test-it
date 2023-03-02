@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Xepozz\TestIt;
 
+use Psr\Container\ContainerInterface;
+
 final class Config
 {
     private array $excludedDirectories = [];
@@ -16,6 +18,11 @@ final class Config
     private string $sourceDirectory = 'src';
     private string $targetDirectory = 'tests';
     private array $includedDirectories = [];
+    private ?ContainerInterface $container = null;
+    /**
+     * @var callable|null
+     */
+    public $containerFactory = null;
 
     /**
      * Disabled test cases evaluation at runtime.
@@ -123,6 +130,23 @@ final class Config
     public function setTargetDirectory(string $directory): self
     {
         $this->targetDirectory = $directory;
+        return $this;
+    }
+
+    public function getContainer(): ?ContainerInterface
+    {
+        return $this->container;
+    }
+
+    public function getContainerFactory(): ?callable
+    {
+        return $this->containerFactory;
+    }
+
+    public function setContainerFactory(callable $callback): self
+    {
+        $this->containerFactory = $callback;
+        $this->container = $callback();
         return $this;
     }
 }

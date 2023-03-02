@@ -8,19 +8,18 @@ use Nette\PhpGenerator\Method;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TestMethodGenerator\TestMethodGeneratorInterface;
 
-final readonly class MethodGenerator
+final class MethodGenerator
 {
     public function __construct(
-        private TestCaseGenerator $testCaseGenerator,
+        private readonly TestCaseGenerator $testCaseGenerator,
         /**
          * @var TestMethodGeneratorInterface[]
          */
-        private array $testMethodGenerators,
+        private readonly array $testMethodGenerators,
     ) {
     }
 
     /**
-     * @param Context $context
      * @return Method[]
      */
     public function generate(Context $context): array

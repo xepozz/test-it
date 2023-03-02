@@ -11,16 +11,18 @@ use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\MethodEvaluator;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
+use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 use Yiisoft\VarDumper\ClosureExporter;
 
-final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterface
+final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
 {
     public function __construct(
-        private TypeNormalizer $typeNormalizer,
-        private MethodEvaluator $methodEvaluator,
-        private Dumper $dumper,
-        private TestMethodFactory $testMethodFactory,
-        private ClosureExporter $closureExporter,
+        private readonly TypeNormalizer $typeNormalizer,
+        private readonly MethodEvaluator $methodEvaluator,
+        private readonly Dumper $dumper,
+        private readonly TestMethodFactory $testMethodFactory,
+        private readonly ClosureExporter $closureExporter,
+        private readonly ValueInitiatorInterface $valueInitiator,
     ) {
     }
 
@@ -59,7 +61,8 @@ final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterf
         if ($method->isStatic()) {
             $methodBodyBuilder->addAct("\$actualValue = {$class->name->name}::{$method->name->name}();");
         } else {
-            $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
+            $classInitiation = $this->valueInitiator->getString($class);
+            $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
             $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}();");
         }
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
@@ -90,7 +93,7 @@ final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterf
 
         try {
             $this->methodEvaluator->evaluate($context, []);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
 

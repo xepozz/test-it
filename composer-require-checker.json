@@ -2,5 +2,11 @@
   "symbol-whitelist" : [
     "PHPUnit\\Framework\\TestCase",
     "Composer\\Autoload\\ClassLoader"
+  ],
+  "scan-files": [
+    "config/container.php",
+    "config/events.php",
+    "test-it",
+    "test-it.php"
   ]
 }

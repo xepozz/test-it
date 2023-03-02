@@ -11,9 +11,14 @@ use Nette\PhpGenerator\PhpNamespace;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
+use Xepozz\TestIt\Event\AfterGenerationEvent;
+use Xepozz\TestIt\Event\ClassGeneratedEvent;
+use Xepozz\TestIt\Event\FileGeneratedEvent;
+use Xepozz\TestIt\Event\NamespaceGeneratedEvent;
 use Xepozz\TestIt\TestGenerator\ClassGenerator;
 use Xepozz\TestIt\TestGenerator\FileGenerator;
 use Xepozz\TestIt\TestGenerator\MethodGenerator;
@@ -43,6 +48,7 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
         private readonly NamespaceGenerator $namespaceGenerator,
         private readonly ClassGenerator $classGenerator,
         private readonly MethodGenerator $methodGenerator,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
         $this->logger = $logger;
     }
@@ -88,7 +94,7 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
         return null;
     }
 
-    public function leaveNode(Node $node): null
+    public function leaveNode(Node $node)
     {
         if ($node instanceof Node\Stmt\Trait_) {
             return null;
@@ -98,6 +104,7 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
         if ($node instanceof Node\Stmt\Namespace_) {
             $generated = $this->namespaceGenerator->generate($context, $this->generatedClasses);
             if ($generated !== null) {
+                $this->eventDispatcher->dispatch(new NamespaceGeneratedEvent($context, $generated));
                 $this->generatedNamespaces[] = $generated;
             }
             return null;
@@ -108,6 +115,7 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
             }
             $generated = $this->classGenerator->generate($context, $this->generatedMethods);
             if ($generated !== null) {
+                $this->eventDispatcher->dispatch(new ClassGeneratedEvent($context, $generated));
                 $this->generatedClasses[] = $generated;
             }
             return null;
@@ -141,9 +149,17 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
     {
         $files = [];
         foreach ($this->generatedNamespaces as $namespace) {
-            $files[] = $this->fileGenerator->generate([$namespace]);
+            $generated = $this->fileGenerator->generate([$namespace]);
+            $this->eventDispatcher->dispatch(new FileGeneratedEvent($this->contextProvider->getContext(), $generated));
+            $files[] = $generated;
         }
         return $files;
+    }
+
+    public function afterTraverse(array $nodes)
+    {
+        $this->eventDispatcher->dispatch(new AfterGenerationEvent($this->contextProvider->getContext()));
+        return parent::afterTraverse($nodes);
     }
 
     private function isClassExcluded(Node\Stmt\Class_|Node\Stmt\Enum_ $node): bool
