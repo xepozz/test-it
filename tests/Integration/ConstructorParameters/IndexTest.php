@@ -29,6 +29,6 @@ class IndexTest extends AbstractTestCase
         return (new Config())
             ->setSourceDirectory($sourceDirectory)
             ->setTargetDirectory($targetDirectory)
-            ->setContainerFactory(fn() => require_once __DIR__ . '/test-container.php');
+            ->setContainerFactory(fn () => require_once __DIR__ . '/test-container.php');
     }
 }

@@ -56,7 +56,8 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
     public function beforeTraverse(array $nodes)
     {
         $context = $this->contextProvider->getContext();
-        $context->reset();;
+        $context->reset();
+        ;
 
         $this->generatedMethods = [];
         $this->generatedClasses = [];

@@ -123,5 +123,4 @@ class NamespaceTest extends TestCase
             ],
         ];
     }
-
 }

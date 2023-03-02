@@ -10,7 +10,6 @@ final class AfterGenerationEvent
 {
     public function __construct(
         public readonly Context $context,
-    )
-    {
+    ) {
     }
 }

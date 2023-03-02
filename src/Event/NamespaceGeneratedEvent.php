@@ -12,7 +12,6 @@ final class NamespaceGeneratedEvent
     public function __construct(
         public readonly Context $context,
         public readonly PhpNamespace $namespace,
-    )
-    {
+    ) {
     }
 }

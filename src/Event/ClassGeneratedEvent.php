@@ -12,7 +12,6 @@ final class ClassGeneratedEvent
     public function __construct(
         public readonly Context $context,
         public readonly ClassType $class,
-    )
-    {
+    ) {
     }
 }

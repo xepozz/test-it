@@ -15,9 +15,7 @@ final class MethodNameStrategy
     }
 
     /**
-     * @param Context $context
      * @param string[] $parts
-     * @return string
      */
     public function generate(Context $context, array $parts): string
     {

@@ -66,7 +66,7 @@ PHP
         $path = $directory . '/' . $traitName . '.php';
         file_put_contents(
             $path,
-             $this->tabsToSpaces((string)$file)
+            $this->tabsToSpaces((string)$file)
         );
     }
 

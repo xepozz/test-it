@@ -130,18 +130,22 @@ final class PathFinder
 
     private static function normalizeNamespace(string $namespace): string
     {
-        $namespace = strtr($namespace, ['-' => '_']);
+        $namespace = strtr($namespace, [
+            '-' => '_',
+        ]);
         return $namespace[-1] === self::NAMESPACE_SEPARATOR ? substr($namespace, 0, -1) : $namespace;
     }
 
     private static function normalizePath(string $path): string
     {
-        $path = realpath($path)?:$path;
+        $path = realpath($path) ?: $path;
         return $path[-1] === DIRECTORY_SEPARATOR ? $path : $path . DIRECTORY_SEPARATOR;
     }
 
     private static function pathToNamespace(string $path): string
     {
-        return strtr($path, [DIRECTORY_SEPARATOR => self::NAMESPACE_SEPARATOR]);
+        return strtr($path, [
+            DIRECTORY_SEPARATOR => self::NAMESPACE_SEPARATOR,
+        ]);
     }
 }

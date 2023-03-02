@@ -24,7 +24,7 @@ final class ContainerValueInitiator implements ValueInitiatorInterface
         $traitNamespace = PathFinder::getNamespaceByPath(
             $context->config->getTargetDirectory() . '/Support',
         );
-        $context->classContext->addTrait($traitNamespace . '\\'.self::TRAIT_CLASS);
+        $context->classContext->addTrait($traitNamespace . '\\' . self::TRAIT_CLASS);
         return "self::\$container->get({$class->name}::class)";
     }
 

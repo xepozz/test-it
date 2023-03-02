@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Xepozz\TestIt;
 
 use Psr\Container\ContainerInterface;
-
 use Xepozz\TestIt\NamingStrategy\MethodNameStrategyEnum;
 
 final class Config

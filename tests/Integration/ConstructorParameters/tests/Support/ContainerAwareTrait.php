@@ -19,6 +19,6 @@ trait ContainerAwareTrait
 
     private function initializeContainer(): void
     {
-        self::$container ??= (fn() => require_once __DIR__ . '/test-container.php')();
+        self::$container ??= (fn () => require_once __DIR__ . '/test-container.php')();
     }
 }
