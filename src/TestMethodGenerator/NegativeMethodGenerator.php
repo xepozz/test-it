@@ -10,6 +10,7 @@ use Nette\PhpGenerator\Method;
 use Xepozz\TestIt\Helper\TestMethodFactory;
 use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\MethodEvaluator;
+use Xepozz\TestIt\NamingStrategy\MethodNameStrategy;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\PhpEntitiesConverter;
 use Xepozz\TestIt\TestGenerator\DataProviderGenerator;
@@ -28,6 +29,7 @@ final class NegativeMethodGenerator implements TestMethodGeneratorInterface
         private readonly PhpEntitiesConverter $phpEntitiesConverter,
         private readonly Dumper $dumper,
         private readonly ValueInitiatorInterface $valueInitiator,
+        private readonly MethodNameStrategy $methodNameStrategy,
     ) {
     }
 
@@ -48,7 +50,8 @@ final class NegativeMethodGenerator implements TestMethodGeneratorInterface
             return [];
         }
 
-        $testMethodName = 'testInvalid' . ucfirst($method->name->name);
+        $testMethodNameParts = ['test', 'invalid', $method->name->name];
+        $testMethodName = $this->methodNameStrategy->generate($context, $testMethodNameParts);
         $testMethod = $this->testMethodFactory->create($testMethodName, $method);
         $testMethod
             ->addParameter('expectedExceptionClass')
@@ -76,8 +79,9 @@ final class NegativeMethodGenerator implements TestMethodGeneratorInterface
             $methodBodyBuilder->addAct("{$variableName}->{$method->name->name}($arguments);");
         }
 
-        $dataProviderName = 'invalidDataProvider' . ucfirst($method->name->name);
-        $invalidDataProvider = $this->dataProviderGenerator->generate($dataProviderName, $testMethod);
+        $dataProviderNameParts = ['invalid', 'data', 'provider', $method->name->name];
+        $dataProviderName = $this->methodNameStrategy->generate($context, $dataProviderNameParts);
+        $dataProvider = $this->dataProviderGenerator->generate($dataProviderName, $testMethod);
 
         $hasInvalidCases = false;
 
@@ -89,7 +93,7 @@ final class NegativeMethodGenerator implements TestMethodGeneratorInterface
                 $exceptionClass = new Literal('\\' . $e::class . '::class');
                 $valuesToPrint = array_map($this->dumper->dump(...), [$exceptionClass, ...$case]);
                 $case = implode(', ', $valuesToPrint);
-                $invalidDataProvider->addBody("yield [{$case}];");
+                $dataProvider->addBody("yield [{$case}];");
                 $hasInvalidCases = true;
             }
         }
@@ -98,7 +102,7 @@ final class NegativeMethodGenerator implements TestMethodGeneratorInterface
         if (!$hasInvalidCases) {
             return [];
         }
-        return [$testMethod, $invalidDataProvider];
+        return [$testMethod, $dataProvider];
     }
 
     public function supports(Context $context, iterable $cases): bool

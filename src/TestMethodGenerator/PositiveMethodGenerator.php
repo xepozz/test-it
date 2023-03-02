@@ -9,6 +9,7 @@ use Nette\PhpGenerator\Method;
 use Xepozz\TestIt\Helper\TestMethodFactory;
 use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\MethodEvaluator;
+use Xepozz\TestIt\NamingStrategy\MethodNameStrategy;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\PhpEntitiesConverter;
 use Xepozz\TestIt\TestGenerator\DataProviderGenerator;
@@ -27,6 +28,7 @@ final class PositiveMethodGenerator implements TestMethodGeneratorInterface
         private readonly TestMethodFactory $testMethodFactory,
         private readonly PhpEntitiesConverter $phpEntitiesConverter,
         private readonly ValueInitiatorInterface $valueInitiator,
+        private readonly MethodNameStrategy $methodNameStrategy,
     ) {
     }
 
@@ -41,7 +43,8 @@ final class PositiveMethodGenerator implements TestMethodGeneratorInterface
         $method = $context->method;
         $possibleReturnTypes = $this->typeNormalizer->denormalize($method->getReturnType());
 
-        $testMethodName = 'test' . ucfirst($method->name->name);
+        $testMethodNameParts = ['test', $method->name->name];
+        $testMethodName = $this->methodNameStrategy->generate($context, $testMethodNameParts);
         $testMethod = $this->testMethodFactory->create($testMethodName, $method);
         $testMethod
             ->addParameter('expectedValue')
@@ -68,7 +71,8 @@ final class PositiveMethodGenerator implements TestMethodGeneratorInterface
         }
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
 
-        $dataProviderName = 'dataProvider' . ucfirst($method->name->name);
+        $dataProviderNameParts = ['data', 'provider', $method->name->name];
+        $dataProviderName = $this->methodNameStrategy->generate($context, $dataProviderNameParts);
         $positiveDataProvider = $this->dataProviderGenerator->generate($dataProviderName, $testMethod);
 
         $hasCase = false;

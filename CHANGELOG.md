@@ -2,6 +2,7 @@
 
 ## 1.2.1 under development
 
+- Add different test name pattern naming: camelCase and snake_case 
 - Add event dispatcher listens class, method and file generators 
 - Add initiators to be able to construct any objects by user side
 - Add PHPUnit, composer-unused, composer-require-checker to CI

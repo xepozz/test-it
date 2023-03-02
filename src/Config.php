@@ -6,6 +6,8 @@ namespace Xepozz\TestIt;
 
 use Psr\Container\ContainerInterface;
 
+use Xepozz\TestIt\NamingStrategy\MethodNameStrategyEnum;
+
 final class Config
 {
     private array $excludedDirectories = [];
@@ -18,6 +20,7 @@ final class Config
     private string $sourceDirectory = 'src';
     private string $targetDirectory = 'tests';
     private array $includedDirectories = [];
+    private MethodNameStrategyEnum $methodNamingStrategy = MethodNameStrategyEnum::CAMEL_CASE;
     private ?ContainerInterface $container = null;
     /**
      * @var callable|null
@@ -130,6 +133,23 @@ final class Config
     public function setTargetDirectory(string $directory): self
     {
         $this->targetDirectory = $directory;
+        return $this;
+    }
+
+    public function getMethodNamingStrategy(): MethodNameStrategyEnum
+    {
+        return $this->methodNamingStrategy;
+    }
+
+    public function useCamelCaseInTestNaming(): self
+    {
+        $this->methodNamingStrategy = MethodNameStrategyEnum::CAMEL_CASE;
+        return $this;
+    }
+
+    public function useSnakeCaseInTestNaming(): self
+    {
+        $this->methodNamingStrategy = MethodNameStrategyEnum::SNAKE_CASE;
         return $this;
     }
 
