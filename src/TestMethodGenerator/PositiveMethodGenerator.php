@@ -65,7 +65,6 @@ final readonly class PositiveMethodGenerator implements TestMethodGeneratorInter
             $classInitiation = $this->valueInitiator->getString($class);
             $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
             $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}($arguments);");
-            $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
         }
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
 

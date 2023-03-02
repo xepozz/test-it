@@ -7,36 +7,39 @@ namespace Xepozz\TestIt\ValueInitiator;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Enum_;
 use PhpParser\NodeFinder;
+use ReflectionClass;
+use ReflectionException;
 
 final class SimpleValueInitiator implements ValueInitiatorInterface
 {
     public function __construct(
-        private NodeFinder $nodeFinder
+        private readonly NodeFinder $nodeFinder
     ) {
     }
 
-    public function getString(Class_ $class): string
+    public function getString(Class_|Enum_ $class): string
     {
         return "new {$class->name->name}()";
     }
 
-    public function getObject(Class_ $class): object
+    public function getObject(Class_|Enum_ $class): object
     {
-        $reflectionClass = new \ReflectionClass((string) $class->namespacedName);
+        $reflectionClass = new ReflectionClass((string) $class->namespacedName);
 
         return $reflectionClass->newInstanceWithoutConstructor();
     }
 
-    public function generateArtifacts(Class_ $class): void
+    public function generateArtifacts(Class_|Enum_ $class): void
     {
     }
 
-    public function supports(Class_ $class): bool
+    public function supports(Class_|Enum_ $class): bool
     {
         try {
-            new \ReflectionClass((string) $class->namespacedName);
-        } catch (\ReflectionException) {
+            new ReflectionClass((string) $class->namespacedName);
+        } catch (ReflectionException) {
             return false;
         }
 

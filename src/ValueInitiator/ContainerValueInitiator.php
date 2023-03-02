@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Xepozz\TestIt\ValueInitiator;
 
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\Enum_;
 use Xepozz\TestIt\Helper\PathFinder;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\Parser\ContextProvider;
@@ -17,7 +18,7 @@ final readonly class ContainerValueInitiator implements ValueInitiatorInterface
     ) {
     }
 
-    public function getString(Class_ $class): string
+    public function getString(Class_|Enum_ $class): string
     {
         $context = $this->getContext();
         $traitNamespace = PathFinder::getNamespaceByPath(
@@ -27,16 +28,16 @@ final readonly class ContainerValueInitiator implements ValueInitiatorInterface
         return "self::\$container->get({$class->name}::class)";
     }
 
-    public function getObject(Class_ $class): object
+    public function getObject(Class_|Enum_ $class): object
     {
         return $this->getContext()->config->getContainer()->get((string) $class->namespacedName);
     }
 
-    public function generateArtifacts(Class_ $class): void
+    public function generateArtifacts(Class_|Enum_ $class): void
     {
     }
 
-    public function supports(Class_ $class): bool
+    public function supports(Class_|Enum_ $class): bool
     {
         $container = $this->getContext()->config->getContainer();
         return $container !== null && $container->has((string) $class->namespacedName);

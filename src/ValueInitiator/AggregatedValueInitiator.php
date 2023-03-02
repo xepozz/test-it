@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Xepozz\TestIt\ValueInitiator;
 
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\Enum_;
+use RuntimeException;
 
 final readonly class AggregatedValueInitiator implements ValueInitiatorInterface
 {
@@ -16,14 +18,14 @@ final readonly class AggregatedValueInitiator implements ValueInitiatorInterface
     ) {
     }
 
-    public function getString(Class_ $class): string
+    public function getString(Class_|Enum_ $class): string
     {
         foreach ($this->valueInitiators as $valueInitiator) {
             if ($valueInitiator->supports($class)) {
                 return $valueInitiator->getString($class);
             }
         }
-        throw new \RuntimeException(
+        throw new RuntimeException(
             sprintf(
                 'Could not find any value initiators for "%s" class.',
                 $class->namespacedName,
@@ -31,14 +33,14 @@ final readonly class AggregatedValueInitiator implements ValueInitiatorInterface
         );
     }
 
-    public function getObject(Class_ $class): object
+    public function getObject(Class_|Enum_ $class): object
     {
         foreach ($this->valueInitiators as $valueInitiator) {
             if ($valueInitiator->supports($class)) {
                 return $valueInitiator->getObject($class);
             }
         }
-        throw new \RuntimeException(
+        throw new RuntimeException(
             sprintf(
                 'Could not find any value initiators for "%s" class.',
                 $class->namespacedName,
@@ -46,14 +48,14 @@ final readonly class AggregatedValueInitiator implements ValueInitiatorInterface
         );
     }
 
-    public function generateArtifacts(Class_ $class): void
+    public function generateArtifacts(Class_|Enum_ $class): void
     {
         foreach ($this->valueInitiators as $valueInitiator) {
             $valueInitiator->generateArtifacts($class);
         }
     }
 
-    public function supports(Class_ $class): bool
+    public function supports(Class_|Enum_ $class): bool
     {
         foreach ($this->valueInitiators as $valueInitiator) {
             if ($valueInitiator->supports($class)) {
