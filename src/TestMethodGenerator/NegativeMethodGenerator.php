@@ -15,10 +15,10 @@ use Xepozz\TestIt\PhpEntitiesConverter;
 use Xepozz\TestIt\TestGenerator\DataProviderGenerator;
 use Xepozz\TestIt\TypeNormalizer;
 use Xepozz\TestIt\TypeSerializer;
+use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 
 final class NegativeMethodGenerator implements TestMethodGeneratorInterface
 {
-
     public function __construct(
         private readonly TypeSerializer $typeSerializer,
         private readonly TypeNormalizer $typeNormalizer,
@@ -27,6 +27,7 @@ final class NegativeMethodGenerator implements TestMethodGeneratorInterface
         private readonly TestMethodFactory $testMethodFactory,
         private readonly PhpEntitiesConverter $phpEntitiesConverter,
         private readonly Dumper $dumper,
+        private readonly ValueInitiatorInterface $valueInitiator,
     ) {
     }
 
@@ -69,7 +70,8 @@ final class NegativeMethodGenerator implements TestMethodGeneratorInterface
             $methodBodyBuilder->addAct("{$class->name->name}::{$method->name->name}($arguments);");
         } else {
             $variableName = '$' . lcfirst($class->name->name);
-            $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
+            $classInitiation = $this->valueInitiator->getString($class);
+            $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
             $methodBodyBuilder->addAct("\$this->expectException(\$expectedExceptionClass);");
             $methodBodyBuilder->addAct("{$variableName}->{$method->name->name}($arguments);");
         }

@@ -68,7 +68,7 @@ final class PathFinder
 
     public static function getBaseNamespace(string $namespace): ?string
     {
-        $namespace = self::normalizeNamespace($namespace). self::NAMESPACE_SEPARATOR;
+        $namespace = self::normalizeNamespace($namespace) . self::NAMESPACE_SEPARATOR;
         $classLoaders = ClassLoader::getRegisteredLoaders();
         foreach ($classLoaders as $classLoader) {
             $dirs = $classLoader->getPrefixesPsr4();
@@ -95,7 +95,7 @@ final class PathFinder
         foreach ($strings as $string) {
             $len = strlen(str_replace($string, '', $search));
 
-            if (str_starts_with($search, $string) && ($len <= $shortest || $shortest <0)) {
+            if (str_starts_with($search, $string) && ($len <= $shortest || $shortest < 0)) {
                 $closest = $string;
                 $shortest = $len;
             }
@@ -118,7 +118,7 @@ final class PathFinder
             foreach ($arrayOfStrings as $string) {
                 $len = strlen(str_replace($string, '', $search));
 
-                if (str_starts_with($search, $string) && ($len <= $shortest || $shortest <0)) {
+                if (str_starts_with($search, $string) && ($len <= $shortest || $shortest < 0)) {
                     $closest = [$key, $string];
                     $shortest = $len;
                 }
@@ -136,7 +136,7 @@ final class PathFinder
 
     private static function normalizePath(string $path): string
     {
-        $path = realpath($path);
+        $path = realpath($path)?:$path;
         return $path[-1] === DIRECTORY_SEPARATOR ? $path : $path . DIRECTORY_SEPARATOR;
     }
 

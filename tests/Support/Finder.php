@@ -9,7 +9,7 @@ class Finder
     /**
      * @return \SplFileInfo[]
      */
-    public static function getFiles(string $dir): array
+    public static function getFiles(string $dir, string $pattern = '*.php'): array
     {
         return array_values(iterator_to_array(
             \Symfony\Component\Finder\Finder::create()
@@ -17,7 +17,7 @@ class Finder
                 ->ignoreDotFiles(true)
                 ->ignoreVCS(true)
                 ->files()
-                ->name('*.php')
+                ->name($pattern)
                 ->getIterator()
         ));
     }

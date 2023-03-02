@@ -2,15 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Xepozz\TestIt\Tests\Integration\ConstructorArguments;
+namespace Xepozz\TestIt\Tests\Integration\ConstructorParameters;
 
-use Nette\PhpGenerator\Helpers;
-use PHPUnit\Framework\TestCase;
-use SplFileInfo;
-use Xepozz\TestIt\TestGenerator;
-
+use Xepozz\TestIt\Config;
 use Xepozz\TestIt\Tests\Integration\AbstractTestCase;
-use Xepozz\TestIt\Tests\Support\Finder;
 
 class IndexTest extends AbstractTestCase
 {
@@ -27,5 +22,13 @@ class IndexTest extends AbstractTestCase
     protected function getTestsNamespace(): string
     {
         return __NAMESPACE__ . '\\tests\\';
+    }
+
+    protected function getConfig(string $sourceDirectory, string $targetDirectory): Config
+    {
+        return (new Config())
+            ->setSourceDirectory($sourceDirectory)
+            ->setTargetDirectory($targetDirectory)
+            ->setContainerFactory(fn() => require_once __DIR__ . '/test-container.php');
     }
 }

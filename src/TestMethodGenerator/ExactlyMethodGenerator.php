@@ -11,6 +11,7 @@ use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\MethodEvaluator;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
+use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 use Yiisoft\VarDumper\ClosureExporter;
 
 final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
@@ -21,6 +22,7 @@ final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
         private readonly Dumper $dumper,
         private readonly TestMethodFactory $testMethodFactory,
         private readonly ClosureExporter $closureExporter,
+        private readonly ValueInitiatorInterface $valueInitiator,
     ) {
     }
 
@@ -59,7 +61,8 @@ final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
         if ($method->isStatic()) {
             $methodBodyBuilder->addAct("\$actualValue = {$class->name->name}::{$method->name->name}();");
         } else {
-            $methodBodyBuilder->addArrange("{$variableName} = new {$class->name->name}();");
+            $classInitiation = $this->valueInitiator->getString($class);
+            $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
             $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}();");
         }
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");

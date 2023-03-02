@@ -39,7 +39,7 @@ use Yiisoft\Di\ContainerConfig;
 
         $logger = new ConsoleLogger($output);
 
-        $definitions = require_once __DIR__ . '/container.php';
+        $definitions = require_once __DIR__ . '/config/container.php';
         $containerConfig = ContainerConfig::create()
             ->withDefinitions($definitions);
         $container = new Container($containerConfig);
