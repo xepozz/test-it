@@ -6,9 +6,9 @@ namespace Xepozz\TestIt;
 
 use Nette\PhpGenerator\Dumper;
 
-final readonly class PhpEntitiesConverter
+final class PhpEntitiesConverter
 {
-    private Dumper $dumper;
+    private readonly Dumper $dumper;
 
     public function __construct()
     {

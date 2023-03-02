@@ -13,14 +13,14 @@ use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
 use Yiisoft\VarDumper\ClosureExporter;
 
-final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterface
+final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
 {
     public function __construct(
-        private TypeNormalizer $typeNormalizer,
-        private MethodEvaluator $methodEvaluator,
-        private Dumper $dumper,
-        private TestMethodFactory $testMethodFactory,
-        private ClosureExporter $closureExporter,
+        private readonly TypeNormalizer $typeNormalizer,
+        private readonly MethodEvaluator $methodEvaluator,
+        private readonly Dumper $dumper,
+        private readonly TestMethodFactory $testMethodFactory,
+        private readonly ClosureExporter $closureExporter,
     ) {
     }
 

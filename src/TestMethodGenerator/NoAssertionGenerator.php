@@ -9,11 +9,11 @@ use Xepozz\TestIt\MethodBodyBuilder;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\TypeNormalizer;
 
-final readonly class NoAssertionGenerator implements TestMethodGeneratorInterface
+final class NoAssertionGenerator implements TestMethodGeneratorInterface
 {
     public function __construct(
-        private TypeNormalizer $typeNormalizer,
-        private TestMethodFactory $testMethodFactory,
+        private readonly TypeNormalizer $typeNormalizer,
+        private readonly TestMethodFactory $testMethodFactory,
     ) {
     }
 

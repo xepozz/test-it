@@ -9,7 +9,7 @@ use Nette\PhpGenerator\PhpNamespace;
 use Xepozz\TestIt\Helper\PathFinder;
 use Xepozz\TestIt\Parser\Context;
 
-final readonly class NamespaceGenerator
+final class NamespaceGenerator
 {
     /**
      * @param ClassType[] $classes
