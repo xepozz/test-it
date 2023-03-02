@@ -7,10 +7,10 @@ namespace Xepozz\TestIt\NamingStrategy;
 use Xepozz\TestIt\Parser\Context;
 use Yiisoft\Strings\Inflector;
 
-final readonly class MethodNameStrategy
+final class MethodNameStrategy
 {
     public function __construct(
-        private Inflector $inflector,
+        private readonly Inflector $inflector,
     ) {
     }
 
