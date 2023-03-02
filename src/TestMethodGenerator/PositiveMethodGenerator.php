@@ -63,8 +63,13 @@ final class PositiveMethodGenerator implements TestMethodGeneratorInterface
             $methodBodyBuilder->addAct("\$actualValue = {$class->name->name}::{$method->name->name}($arguments);");
         } else {
             $variableName = '$' . lcfirst($class->name->name);
-            $classInitiation = $this->valueInitiator->getString($class);
-            $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+            if ($this->valueInitiator->supports($class)) {
+                $classInitiation = $this->valueInitiator->getString($class);
+                $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+            } else {
+                $methodBodyBuilder->addArrange("// TODO construct the object");
+                $methodBodyBuilder->addArrange("{$variableName} = new {$class->name}();");
+            }
             $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}($arguments);");
         }
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");

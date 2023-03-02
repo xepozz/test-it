@@ -62,8 +62,13 @@ final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
         if ($method->isStatic()) {
             $methodBodyBuilder->addAct("\$actualValue = {$class->name->name}::{$method->name->name}();");
         } else {
-            $classInitiation = $this->valueInitiator->getString($class);
-            $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+            if ($this->valueInitiator->supports($class)) {
+                $classInitiation = $this->valueInitiator->getString($class);
+                $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+            } else {
+                $methodBodyBuilder->addArrange("// TODO construct the object");
+                $methodBodyBuilder->addArrange("{$variableName} = new {$class->name}();");
+            }
             $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}();");
         }
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");

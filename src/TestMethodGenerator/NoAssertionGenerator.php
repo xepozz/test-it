@@ -32,8 +32,13 @@ final class NoAssertionGenerator implements TestMethodGeneratorInterface
 
         $variableName = '$' . lcfirst($class->name->name);
         $methodBodyBuilder = MethodBodyBuilder::create();
-        $classInitiation = $this->valueInitiator->getString($class);
-        $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+        if ($this->valueInitiator->supports($class)) {
+            $classInitiation = $this->valueInitiator->getString($class);
+            $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+        } else {
+            $methodBodyBuilder->addArrange("// TODO construct the object");
+            $methodBodyBuilder->addArrange("{$variableName} = new {$class->name}();");
+        }
         $methodBodyBuilder->addAssert("\$this->expectNotToPerformAssertions();");
         $methodBodyBuilder->addAssert("{$variableName}->{$method->name->name}();");
 

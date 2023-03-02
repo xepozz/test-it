@@ -19,7 +19,7 @@ final class PhpEntitiesConverter
     {
         return array_map(
             fn ($code) => eval(sprintf('return %s;', $code)),
-            array_map($this->dumper->dump(...), $case)
+            array_map([$this->dumper, 'dump'], $case)
         );
     }
 }

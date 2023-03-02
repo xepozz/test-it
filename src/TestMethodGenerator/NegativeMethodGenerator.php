@@ -71,8 +71,13 @@ final class NegativeMethodGenerator implements TestMethodGeneratorInterface
             $methodBodyBuilder->addAct("{$class->name->name}::{$method->name->name}($arguments);");
         } else {
             $variableName = '$' . lcfirst($class->name->name);
-            $classInitiation = $this->valueInitiator->getString($class);
-            $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+            if ($this->valueInitiator->supports($class)) {
+                $classInitiation = $this->valueInitiator->getString($class);
+                $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+            } else {
+                $methodBodyBuilder->addArrange("// TODO construct the object");
+                $methodBodyBuilder->addArrange("{$variableName} = new {$class->name}();");
+            }
             $methodBodyBuilder->addAct("\$this->expectException(\$expectedExceptionClass);");
             $methodBodyBuilder->addAct("{$variableName}->{$method->name->name}($arguments);");
         }
@@ -89,7 +94,7 @@ final class NegativeMethodGenerator implements TestMethodGeneratorInterface
                 $this->methodEvaluator->evaluate($context, $valuesToPrint);
             } catch (\Throwable $e) {
                 $exceptionClass = new Literal('\\' . $e::class . '::class');
-                $valuesToPrint = array_map($this->dumper->dump(...), [$exceptionClass, ...$case]);
+                $valuesToPrint = array_map([$this->dumper, 'dump'], [$exceptionClass, ...$case]);
                 $case = implode(', ', $valuesToPrint);
                 $dataProvider->addBody("yield [{$case}];");
                 $hasInvalidCases = true;
