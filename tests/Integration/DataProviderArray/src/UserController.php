@@ -12,6 +12,8 @@ class UserController
     }
     public function array(): array
     {
-        return ['key' => 'value'];
+        return [
+            'key' => 'value',
+        ];
     }
 }

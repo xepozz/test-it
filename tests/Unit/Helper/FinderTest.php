@@ -110,7 +110,7 @@ class FinderTest extends TestCase
                 __DIR__ . '/Fixtures/Directory1/Subdirectory/file2.php',
             ],
             (new Config())
-                ->setSourceDirectory(__DIR__.'/Fixtures')
+                ->setSourceDirectory(__DIR__ . '/Fixtures')
                 ->excludeDirectories([
                     __DIR__ . '/Fixtures/Directory1',
                     __DIR__ . '/Fixtures/directory2',

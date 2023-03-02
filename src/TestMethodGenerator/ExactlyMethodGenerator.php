@@ -24,7 +24,7 @@ final class ExactlyMethodGenerator implements TestMethodGeneratorInterface
         private readonly TestMethodFactory $testMethodFactory,
         private readonly ClosureExporter $closureExporter,
         private readonly ValueInitiatorInterface $valueInitiator,
-        private MethodNameStrategy $methodNameStrategy,
+        private readonly MethodNameStrategy $methodNameStrategy,
     ) {
     }
 
