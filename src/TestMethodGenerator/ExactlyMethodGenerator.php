@@ -58,9 +58,13 @@ final readonly class ExactlyMethodGenerator implements TestMethodGeneratorInterf
 
         $methodBodyBuilder = MethodBodyBuilder::create();
         $methodBodyBuilder->addArrange("\$expectedValue = {$value};");
-        $classInitiation = $this->valueInitiator->getString($class);
-        $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
-        $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}();");
+        if ($method->isStatic()) {
+            $methodBodyBuilder->addAct("\$actualValue = {$class->name->name}::{$method->name->name}();");
+        } else {
+            $classInitiation = $this->valueInitiator->getString($class);
+            $methodBodyBuilder->addArrange("{$variableName} = {$classInitiation};");
+            $methodBodyBuilder->addAct("\$actualValue = {$variableName}->{$method->name->name}();");
+        }
         $methodBodyBuilder->addAssert("\$this->assertEquals(\$expectedValue, \$actualValue);");
 
         $testMethod->addBody($methodBodyBuilder->build());

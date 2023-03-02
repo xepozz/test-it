@@ -24,9 +24,12 @@ final readonly class MethodEvaluator
          * It's impossible to find them with Reflection
          * TODO: make a workaround
          */
-        $object = $this->valueInitiator->getObject($class);
 
         try {
+            if ($method->isStatic()) {
+                return [$class->namespacedName->toString(), $method->name->toString()](...$arguments);
+            }
+            $object = $this->valueInitiator->getObject($class);
             return $object->{$method->name->name}(...$arguments);
         } catch (\Throwable $e) {
             throw new \RuntimeException(
