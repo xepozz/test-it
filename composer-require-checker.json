@@ -1,0 +1,6 @@
+{
+  "symbol-whitelist" : [
+    "PHPUnit\\Framework\\TestCase",
+    "Composer\\Autoload\\ClassLoader"
+  ]
+}
