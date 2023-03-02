@@ -2,6 +2,9 @@
 
 ## 1.2.1 under development
 
+- Add event dispatcher listens class, method and file generators 
+- Add initiators to be able to construct any objects by user side
+- Add PHPUnit, composer-unused, composer-require-checker to CI
 - Fix generating no asserting case
 
 ## 1.2.0
