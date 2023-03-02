@@ -7,10 +7,10 @@ namespace Xepozz\TestIt;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\ValueInitiator\ValueInitiatorInterface;
 
-final readonly class MethodEvaluator
+final class MethodEvaluator
 {
     public function __construct(
-        private ValueInitiatorInterface $valueInitiator
+        private readonly ValueInitiatorInterface $valueInitiator
     ) {
     }
 

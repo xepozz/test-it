@@ -94,7 +94,7 @@ final class ContextMethodVisitor extends NodeVisitorAbstract implements LoggerAw
         return null;
     }
 
-    public function leaveNode(Node $node): null
+    public function leaveNode(Node $node)
     {
         if ($node instanceof Node\Stmt\Trait_) {
             return null;

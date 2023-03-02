@@ -25,7 +25,6 @@ class MatrixIntersectionTest extends TestCase
         $g = new MatrixIntersection();
 
         $actualValue = $g->intersect(...$arrays);
-        $actualValue = iterator_to_array($actualValue);
 
         $this->assertEquals($expectedValue, ($actualValue));
     }

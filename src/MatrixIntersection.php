@@ -10,7 +10,7 @@ final class MatrixIntersection
      * @param \Iterator[] $generators
      * @return array[]
      */
-    public function intersect(iterable ...$generators): iterable
+    public function intersect(iterable ...$generators): array
     {
         $result = [];
         $currentGenerator = array_shift($generators);
@@ -20,7 +20,8 @@ final class MatrixIntersection
         $generatorsValues = [];
         if ($generators) {
             foreach ($this->intersect(...$generators) as $innerValue) {
-                $generatorsValues[] = [...iterator_to_array($innerValue)];
+                $array = $innerValue instanceof \Traversable ? iterator_to_array($innerValue) : $innerValue;
+                $generatorsValues[] = [...$array];
             }
         }
         foreach ($currentGenerator as $value) {

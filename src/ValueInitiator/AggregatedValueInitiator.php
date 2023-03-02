@@ -8,13 +8,13 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Enum_;
 use RuntimeException;
 
-final readonly class AggregatedValueInitiator implements ValueInitiatorInterface
+final class AggregatedValueInitiator implements ValueInitiatorInterface
 {
     public function __construct(
         /**
          * @var ValueInitiatorInterface[] $valueInitiators
          */
-        private array $valueInitiators,
+        private readonly array $valueInitiators,
     ) {
     }
 

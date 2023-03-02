@@ -7,11 +7,11 @@ namespace Xepozz\TestIt\Event;
 use Nette\PhpGenerator\PhpFile;
 use Xepozz\TestIt\Parser\Context;
 
-final readonly class FileGeneratedEvent
+final class FileGeneratedEvent
 {
     public function __construct(
-        public Context $context,
-        public PhpFile $file,
+        public readonly Context $context,
+        public readonly PhpFile $file,
     )
     {
     }

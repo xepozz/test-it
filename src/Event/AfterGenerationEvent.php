@@ -6,10 +6,10 @@ namespace Xepozz\TestIt\Event;
 
 use Xepozz\TestIt\Parser\Context;
 
-final readonly class AfterGenerationEvent
+final class AfterGenerationEvent
 {
     public function __construct(
-        public Context $context,
+        public readonly Context $context,
     )
     {
     }

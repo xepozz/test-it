@@ -10,11 +10,11 @@ use Xepozz\TestIt\Helper\PathFinder;
 use Xepozz\TestIt\Parser\Context;
 use Xepozz\TestIt\Parser\ContextProvider;
 
-final readonly class ContainerValueInitiator implements ValueInitiatorInterface
+final class ContainerValueInitiator implements ValueInitiatorInterface
 {
     private const TRAIT_CLASS = 'ContainerAwareTrait';
     public function __construct(
-        private ContextProvider $contextProvider,
+        private readonly ContextProvider $contextProvider,
     ) {
     }
 
